@@ -1,0 +1,5 @@
+{
+  "name": "Miss Iong's Pokémon Class Points Manager",
+  "description": "A gamified classroom management system with Pokémon themes, student point tracking, bilingual commands, and data persistence.",
+  "requestFramePermissions": []
+}
