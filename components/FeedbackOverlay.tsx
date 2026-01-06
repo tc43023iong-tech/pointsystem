@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Student } from '../types';
 
 interface FeedbackOverlayProps {
@@ -32,14 +32,15 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
         dx: `${Math.cos(angle) * distance}px`,
         dy: `${Math.sin(angle) * distance}px`,
         color: ['#ffeb3b', '#ff5722', '#4caf50', '#2196f3', '#e91e63', '#ffffff', '#00bcd4'][Math.floor(Math.random() * 7)],
-        delay: `${Math.random() * 0.2}s`,
+        delay: `${Math.random() * 0.1}s`,
         size: `${Math.random() * 8 + 4}px`
       };
     });
   }, [isPos]);
 
   useEffect(() => {
-    const timer = setTimeout(onComplete, 2200);
+    // Set duration to 1.25 seconds as requested
+    const timer = setTimeout(onComplete, 1250);
     return () => clearTimeout(timer);
   }, [onComplete]);
 
@@ -61,6 +62,7 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
                   '--dy': p.dy, 
                   backgroundColor: p.color,
                   animationDelay: p.delay,
+                  animationDuration: '0.8s', // Faster fireworks to fit 1.25s
                   width: p.size,
                   height: p.size
                 } as React.CSSProperties}

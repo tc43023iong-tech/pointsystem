@@ -13,6 +13,7 @@ export const ACTIONS: PointAction[] = [
   { labelEn: "QUIET READING", labelZh: "安靜閱讀", points: 1, type: 'positive' },
   { labelEn: "BRAVE SPEAKER", labelZh: "勇於發言", points: 1, type: 'positive' },
   { labelEn: "QUIET EATING", labelZh: "安靜吃飯", points: 1, type: 'positive' },
+  { labelEn: "PARTICIPATING IN EXERCISES", labelZh: "配合做課間操", points: 1, type: 'positive' },
   { labelEn: "RESPECT MISS IONG!", labelZh: "尊重容老師！", points: 2, type: 'positive' },
   
   // Negative (減分行為) - Ordered as requested
@@ -23,6 +24,7 @@ export const ACTIONS: PointAction[] = [
   { labelEn: "NOT PAYING ATTENTION", labelZh: "不專心", points: -1, type: 'negative' },
   { labelEn: "UNTIDY AREA", labelZh: "座位凌亂", points: -1, type: 'negative' },
   { labelEn: "INTERRUPTING", labelZh: "插嘴", points: -1, type: 'negative' },
+  { labelEn: "CHATTING IN CLASS", labelZh: "課上聊天", points: -1, type: 'negative' },
   { labelEn: "DISRESPECTFUL TO MISS IONG", labelZh: "對容老師無禮", points: -2, type: 'negative' },
   { labelEn: "SLEEPY IN CLASS", labelZh: "課堂睡覺", points: -1, type: 'negative' },
 ];
