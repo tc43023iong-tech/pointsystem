@@ -202,22 +202,22 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-pokemon-red text-white p-4 shadow-xl sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl md:text-2xl font-black uppercase tracking-widest pokemon-font">Miss Iong's Class</h1>
+      <header className="bg-pokemon-red text-white p-3 shadow-xl sticky top-0 z-40 border-b-4 border-black/10">
+        <div className="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-black uppercase tracking-tighter pokemon-font truncate max-w-[200px] lg:max-w-none">Miss Iong's Class</h1>
           </div>
           
-          <div className="flex flex-wrap items-center justify-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button 
               onClick={handleRandomPick}
-              className="bg-orange-500 text-white font-black px-4 py-2 rounded-lg hover:scale-105 active:scale-95 transition-all text-xs uppercase border-b-4 border-black/20 mr-2 flex items-center gap-2"
+              className="h-10 px-4 bg-yellow-400 text-red-700 font-black rounded-lg hover:bg-yellow-300 transition-all text-[11px] uppercase border-b-2 border-yellow-600 flex items-center gap-2 whitespace-nowrap shadow-md"
             >
-              🎯 Random Pick / 隨機抽籤
+              <span className="text-base">🎯</span> RANDOM PICK / 隨機抽籤
             </button>
 
             <select 
-              className="bg-white/20 border-2 border-white/30 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none cursor-pointer"
+              className="h-10 px-3 bg-white/20 border border-white/30 rounded-lg text-xs font-bold focus:outline-none cursor-pointer hover:bg-white/30 transition-colors shadow-sm"
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
             >
@@ -227,7 +227,7 @@ const App: React.FC = () => {
             </select>
             
             <select 
-              className="bg-white/20 border-2 border-white/30 rounded-lg px-3 py-2 text-sm font-bold focus:outline-none cursor-pointer"
+              className="h-10 px-3 bg-white/20 border border-white/30 rounded-lg text-xs font-bold focus:outline-none cursor-pointer hover:bg-white/30 transition-colors shadow-sm"
               value={sortType}
               onChange={(e) => setSortType(e.target.value as SortType)}
             >
@@ -237,11 +237,17 @@ const App: React.FC = () => {
               <option value={SortType.NAME_ASC} className="text-black">Name / 姓名排列</option>
             </select>
 
-            <button onClick={exportData} title="Export all classes" className="bg-pokemon-yellow text-black font-black px-4 py-2 rounded-lg hover:scale-105 active:scale-95 transition-all text-xs uppercase border-b-4 border-black/20">
-              Export All / 導出全部
+            <button 
+              onClick={exportData} 
+              className="h-10 px-4 bg-orange-500 hover:bg-orange-400 text-white font-black rounded-lg transition-all text-[11px] uppercase border-b-2 border-orange-700 shadow-md whitespace-nowrap"
+            >
+              EXPORT ALL / 導出全部
             </button>
-            <label title="Import data for all classes" className="bg-white text-pokemon-red font-black px-4 py-2 rounded-lg hover:scale-105 active:scale-95 transition-all text-xs uppercase border-b-4 border-black/20 cursor-pointer text-center">
-              Import All / 導入全部
+            
+            <label 
+              className="h-10 px-4 bg-amber-500 hover:bg-amber-400 text-white font-black rounded-lg transition-all text-[11px] uppercase border-b-2 border-amber-700 shadow-md cursor-pointer flex items-center justify-center whitespace-nowrap"
+            >
+              IMPORT ALL / 導入全部
               <input type="file" className="hidden" accept=".txt" onChange={handleImport} />
             </label>
           </div>
@@ -249,24 +255,27 @@ const App: React.FC = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto w-full p-4 md:p-8">
-        <div className="mb-8 flex flex-col md:flex-row gap-4 items-center">
+      <main className="flex-1 max-w-[1600px] mx-auto w-full p-4">
+        <div className="mb-6 flex flex-col md:flex-row gap-4 items-center">
           <div className="relative flex-1 w-full">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-gray-400">
+              🔍
+            </div>
             <input 
               type="text" 
-              placeholder="Search Student..."
-              className="w-full pl-12 pr-4 py-3 rounded-2xl shadow-sm border-2 border-gray-100 focus:border-pokemon-blue focus:ring-4 focus:ring-blue-100 transition-all outline-none text-lg"
+              placeholder="Search Student Name or Roll No..."
+              className="w-full pl-12 pr-4 py-3 rounded-xl shadow-sm border-2 border-gray-100 focus:border-pokemon-blue focus:ring-4 focus:ring-blue-100 transition-all outline-none text-lg bg-white"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="text-gray-500 font-bold text-sm uppercase px-4 py-2 bg-gray-200 rounded-full whitespace-nowrap">
+          <div className="px-4 py-2 bg-white rounded-xl border border-gray-200 text-gray-500 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-green-500"></span>
             Students: {filteredStudents.length} / 總人數
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
           {filteredStudents.map(student => (
             <StudentCard 
               key={student.id} 
@@ -281,9 +290,9 @@ const App: React.FC = () => {
         </div>
 
         {filteredStudents.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-            <div className="text-6xl mb-4">👻</div>
-            <p className="text-xl font-bold">No Students Found / 找不到相關學生</p>
+          <div className="flex flex-col items-center justify-center py-32 text-gray-400">
+            <div className="text-6xl mb-4 opacity-20">👻</div>
+            <p className="text-xl font-black uppercase tracking-widest opacity-50">No Students Found / 找不到相關學生</p>
           </div>
         )}
       </main>
