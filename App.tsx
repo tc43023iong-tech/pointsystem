@@ -16,10 +16,15 @@ const App: React.FC = () => {
   
   // Modals & Overlays
   const [actingStudent, setActingStudent] = useState<Student | null>(null);
+  const [bulkActing, setBulkActing] = useState<boolean>(false);
   const [pokeselStudent, setPokeselStudent] = useState<Student | null>(null);
   const [feedback, setFeedback] = useState<{ student: Student, type: 'positive' | 'negative', reason?: string } | null>(null);
   
-  // Random Picker State - Maps classId to list of student IDs already picked
+  // Multi-select State
+  const [isMultiSelect, setIsMultiSelect] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  // Random Picker State
   const [pickedIdsMap, setPickedIdsMap] = useState<Record<string, string[]>>({});
   const [isShuffling, setIsShuffling] = useState(false);
   const [shuffleDisplay, setShuffleDisplay] = useState<Student | null>(null);
@@ -105,6 +110,19 @@ const App: React.FC = () => {
     }));
   };
 
+  const updateMultipleStudents = (updatedStudents: Student[]) => {
+    setClasses(prev => prev.map(c => {
+      if (c.id === selectedClassId) {
+        const studentMap = new Map(updatedStudents.map(s => [s.id, s]));
+        return {
+          ...c,
+          students: c.students.map(s => studentMap.has(s.id) ? studentMap.get(s.id)! : s)
+        };
+      }
+      return c;
+    }));
+  };
+
   const triggerFeedback = (student: Student, delta: number, reason?: string) => {
     if (delta > 0) {
       setFeedback({ student, type: 'positive', reason });
@@ -116,65 +134,121 @@ const App: React.FC = () => {
   };
 
   const handleAction = (action: PointAction) => {
-    if (!actingStudent) return;
-    
     const isPos = action.type === 'positive';
     const pointsDelta = action.points;
     const reason = `${action.labelZh} / ${action.labelEn}`;
-    
-    const updated: Student = { 
-      ...actingStudent, 
-      points: (actingStudent.points || 0) + pointsDelta,
-      posPoints: (actingStudent.posPoints || 0) + (isPos ? Math.abs(pointsDelta) : 0),
-      negPoints: (actingStudent.negPoints || 0) + (!isPos ? Math.abs(pointsDelta) : 0)
-    };
 
-    updateStudent(updated);
-    triggerFeedback(updated, pointsDelta, reason);
-    setActingStudent(null);
+    if (bulkActing) {
+      const targetStudents = filteredStudents.filter(s => selectedIds.has(s.id));
+      const updatedList = targetStudents.map(s => ({
+        ...s,
+        points: (s.points || 0) + pointsDelta,
+        posPoints: (s.posPoints || 0) + (isPos ? Math.abs(pointsDelta) : 0),
+        negPoints: (s.negPoints || 0) + (!isPos ? Math.abs(pointsDelta) : 0)
+      }));
+      updateMultipleStudents(updatedList);
+      
+      const groupStudent: Student = {
+        id: 'group',
+        name: `${selectedIds.size} Students / 多位同學`,
+        rollNo: 0,
+        pokemonId: 25,
+        points: pointsDelta,
+        posPoints: 0,
+        negPoints: 0
+      };
+      
+      triggerFeedback(groupStudent, pointsDelta, reason);
+      
+      setBulkActing(false);
+      setIsMultiSelect(false);
+      setSelectedIds(new Set());
+    } else if (actingStudent) {
+      const updated: Student = { 
+        ...actingStudent, 
+        points: (actingStudent.points || 0) + pointsDelta,
+        posPoints: (actingStudent.posPoints || 0) + (isPos ? Math.abs(pointsDelta) : 0),
+        negPoints: (actingStudent.negPoints || 0) + (!isPos ? Math.abs(pointsDelta) : 0)
+      };
+      updateStudent(updated);
+      triggerFeedback(updated, pointsDelta, reason);
+      setActingStudent(null);
+    }
   };
 
   const handleManualPoint = (points: number) => {
-    if (!actingStudent) return;
-    
     const isPos = points > 0;
     const isNeg = points < 0;
     const reason = "Manual / 手動調整";
-    
-    const updated: Student = { 
-      ...actingStudent, 
-      points: (actingStudent.points || 0) + points,
-      posPoints: (actingStudent.posPoints || 0) + (isPos ? Math.abs(points) : 0),
-      negPoints: (actingStudent.negPoints || 0) + (isNeg ? Math.abs(points) : 0)
-    };
 
-    updateStudent(updated);
-    triggerFeedback(updated, points, reason);
-    setActingStudent(null);
+    if (bulkActing) {
+      const targetStudents = filteredStudents.filter(s => selectedIds.has(s.id));
+      const updatedList = targetStudents.map(s => ({
+        ...s,
+        points: (s.points || 0) + points,
+        posPoints: (s.posPoints || 0) + (isPos ? Math.abs(points) : 0),
+        negPoints: (s.negPoints || 0) + (isNeg ? Math.abs(points) : 0)
+      }));
+      updateMultipleStudents(updatedList);
+      
+      const groupStudent: Student = {
+        id: 'group',
+        name: `${selectedIds.size} Students / 多位同學`,
+        rollNo: 0,
+        pokemonId: 25,
+        points: points,
+        posPoints: 0,
+        negPoints: 0
+      };
+      
+      triggerFeedback(groupStudent, points, reason);
+
+      setBulkActing(false);
+      setIsMultiSelect(false);
+      setSelectedIds(new Set());
+    } else if (actingStudent) {
+      const updated: Student = { 
+        ...actingStudent, 
+        points: (actingStudent.points || 0) + points,
+        posPoints: (actingStudent.posPoints || 0) + (isPos ? Math.abs(points) : 0),
+        negPoints: (actingStudent.negPoints || 0) + (isNeg ? Math.abs(points) : 0)
+      };
+      updateStudent(updated);
+      triggerFeedback(updated, points, reason);
+      setActingStudent(null);
+    }
+  };
+
+  const toggleSelection = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedIds(next);
+  };
+
+  const selectAllFiltered = () => {
+    const next = new Set<string>();
+    filteredStudents.forEach(s => next.add(s.id));
+    setSelectedIds(next);
+  };
+
+  const deselectAll = () => {
+    setSelectedIds(new Set());
   };
 
   const handleRandomPick = () => {
     if (filteredStudents.length === 0) return;
-    
     const classPickedHistory = pickedIdsMap[selectedClassId] || [];
-    
-    // Find students who haven't been picked yet
     let pool = filteredStudents.filter(s => !classPickedHistory.includes(s.id));
-    
-    // If everyone in the current filtered list has been picked, reset the pool
     if (pool.length === 0) {
       pool = filteredStudents;
-      // We clear the history for this class to start fresh cycle
       setPickedIdsMap(prev => ({ ...prev, [selectedClassId]: [] }));
     }
-
     setIsShuffling(true);
     let count = 0;
     const maxShuffle = 18;
-    
     const winnerIndex = Math.floor(Math.random() * pool.length);
     const winner = pool[winnerIndex];
-
     const interval = setInterval(() => {
       if (count < maxShuffle) {
         const randomIndex = Math.floor(Math.random() * filteredStudents.length);
@@ -185,7 +259,6 @@ const App: React.FC = () => {
         setTimeout(() => {
           setIsShuffling(false);
           setActingStudent(winner);
-          // Mark as picked
           setPickedIdsMap(prev => {
             const currentHistory = prev[selectedClassId] || [];
             if (!currentHistory.includes(winner.id)) {
@@ -199,33 +272,27 @@ const App: React.FC = () => {
     }, 80);
   };
 
-  const exportData = () => {
-    const data = JSON.stringify(classes, null, 2);
-    const blob = new Blob([data], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `Miss_Iongs_All_Classes_Data_${new Date().toISOString().split('T')[0]}.txt`;
-    link.click();
-  };
-
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = (event) => {
       try {
-        const content = ev.target?.result as string;
-        const parsed = JSON.parse(content);
-        if (Array.isArray(parsed)) {
-          setClasses(parsed);
-          setSelectedClassId(parsed[0].id);
-          alert('Import Successful! All class points and Pokemon restored.\n導入成功！所有班級分數與寶可夢已恢復。');
+        const content = event.target?.result as string;
+        const importedData = JSON.parse(content);
+        if (Array.isArray(importedData)) {
+          setClasses(importedData);
+          if (importedData.length > 0) {
+            setSelectedClassId(importedData[0].id);
+          }
+          alert('Import Successful! / 導入成功！');
         } else {
-          throw new Error('Invalid format');
+          alert('Invalid file format. / 文件格式不正確。');
         }
       } catch (err) {
-        alert('Invalid file format. Please use a file exported by this app.\n檔案格式不正確。請使用此程式導出的檔案。');
+        console.error("Failed to import data:", err);
+        alert('Error parsing file. / 解析文件時出錯。');
       }
     };
     reader.readAsText(file);
@@ -234,92 +301,138 @@ const App: React.FC = () => {
 
   const pickedCount = (pickedIdsMap[selectedClassId] || []).filter(id => filteredStudents.some(fs => fs.id === id)).length;
 
+  // Unified Button & Control Styles
+  const headerControlBase = "h-10 px-4 rounded-xl font-black text-[10px] md:text-[11px] uppercase tracking-tight flex items-center justify-center gap-2 transition-all shadow-md border-2 whitespace-nowrap";
+  
+  // Color themes
+  const yellowBtnStyle = "bg-yellow-400 text-orange-900 border-yellow-300 hover:bg-yellow-300 active:translate-y-0.5";
+  const orangeBtnStyle = "bg-orange-500 text-white border-orange-400 hover:bg-orange-400 active:translate-y-0.5 shadow-orange-900/10";
+  
+  const selectBase = "h-10 px-3 bg-white/10 border-white/20 rounded-xl text-xs font-bold text-white focus:outline-none cursor-pointer hover:bg-white/20 transition-colors shadow-sm outline-none";
+
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header */}
+      {/* Unified Header */}
       <header className="bg-pokemon-red text-white p-3 shadow-xl sticky top-0 z-40 border-b-4 border-black/10">
         <div className="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-black uppercase tracking-tighter pokemon-font truncate max-w-[200px] lg:max-w-none">Miss Iong's Class</h1>
+            <h1 className="text-xl font-black uppercase tracking-tighter pokemon-font truncate max-w-[300px] lg:max-w-none">Miss Iong's Class</h1>
           </div>
           
           <div className="flex flex-wrap items-center gap-2">
+            {/* Functional Buttons - Yellow */}
+            <button 
+              onClick={() => {
+                setIsMultiSelect(!isMultiSelect);
+                setSelectedIds(new Set());
+              }}
+              className={`${headerControlBase} ${
+                isMultiSelect 
+                  ? 'bg-yellow-500 text-orange-900 border-yellow-600 ring-2 ring-yellow-200 shadow-inner' 
+                  : yellowBtnStyle
+              }`}
+            >
+              {isMultiSelect ? '❌ CLOSE / 關閉多選' : '✅ MULTI-SELECT / 開啟多選'}
+            </button>
+
             <button 
               onClick={handleRandomPick}
-              className="h-10 px-4 bg-yellow-400 text-red-700 font-black rounded-lg hover:bg-yellow-300 transition-all text-[11px] uppercase border-b-2 border-yellow-600 flex items-center gap-2 whitespace-nowrap shadow-md"
+              className={`${headerControlBase} ${yellowBtnStyle}`}
             >
-              <span className="text-base">🎯</span> RANDOM PICK ({pickedCount}/{filteredStudents.length})
+              🎯 RANDOM PICK ({pickedCount}/{filteredStudents.length})
             </button>
 
-            <select 
-              className="h-10 px-3 bg-white/20 border border-white/30 rounded-lg text-xs font-bold focus:outline-none cursor-pointer hover:bg-white/30 transition-colors shadow-sm"
-              value={selectedClassId}
-              onChange={(e) => setSelectedClassId(e.target.value)}
-            >
-              {classes.map(c => (
-                <option key={c.id} value={c.id} className="text-black">{c.className}</option>
-              ))}
-            </select>
-            
-            <select 
-              className="h-10 px-3 bg-white/20 border border-white/30 rounded-lg text-xs font-bold focus:outline-none cursor-pointer hover:bg-white/30 transition-colors shadow-sm"
-              value={sortType}
-              onChange={(e) => setSortType(e.target.value as SortType)}
-            >
-              <option value={SortType.ID_ASC} className="text-black">Roll No / 學號排列</option>
-              <option value={SortType.SCORE_DESC} className="text-black">Score (High-Low) / 分數由高到低</option>
-              <option value={SortType.SCORE_ASC} className="text-black">Score (Low-High) / 分數由低到高</option>
-              <option value={SortType.NAME_ASC} className="text-black">Name / 姓名排列</option>
-            </select>
+            {/* Settings Group */}
+            <div className="flex items-center gap-2">
+              <select 
+                className={selectBase}
+                value={selectedClassId}
+                onChange={(e) => setSelectedClassId(e.target.value)}
+              >
+                {classes.map(c => (
+                  <option key={c.id} value={c.id} className="text-black font-sans">{c.className}</option>
+                ))}
+              </select>
+              
+              <select 
+                className={selectBase}
+                value={sortType}
+                onChange={(e) => setSortType(e.target.value as SortType)}
+              >
+                <option value={SortType.ID_ASC} className="text-black font-sans">Roll No / 學號排列</option>
+                <option value={SortType.SCORE_DESC} className="text-black font-sans">Score (High-Low) / 分數由高到低</option>
+                <option value={SortType.SCORE_ASC} className="text-black font-sans">Score (Low-High) / 分數由低到高</option>
+                <option value={SortType.NAME_ASC} className="text-black font-sans">Name / 姓名排列</option>
+              </select>
+            </div>
 
-            <button 
-              onClick={exportData} 
-              className="h-10 px-4 bg-orange-500 hover:bg-orange-400 text-white font-black rounded-lg transition-all text-[11px] uppercase border-b-2 border-orange-700 shadow-md whitespace-nowrap"
-            >
-              EXPORT ALL / 導出全部
-            </button>
-            
-            <label 
-              className="h-10 px-4 bg-amber-500 hover:bg-amber-400 text-white font-black rounded-lg transition-all text-[11px] uppercase border-b-2 border-amber-700 shadow-md cursor-pointer flex items-center justify-center whitespace-nowrap"
-            >
-              IMPORT ALL / 導入全部
-              <input type="file" className="hidden" accept=".txt" onChange={handleImport} />
-            </label>
+            {/* Data Buttons - Distinct Orange Warm Theme */}
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => {
+                  const data = JSON.stringify(classes, null, 2);
+                  const blob = new Blob([data], { type: 'text/plain' });
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = `Miss_Iongs_All_Classes_Data_${new Date().toISOString().split('T')[0]}.txt`;
+                  link.click();
+                }} 
+                className={`${headerControlBase} ${orangeBtnStyle}`}
+              >
+                EXPORT / 導出
+              </button>
+              
+              <label className={`${headerControlBase} ${orangeBtnStyle} cursor-pointer`}>
+                IMPORT / 導入
+                <input type="file" className="hidden" accept=".txt" onChange={handleImport} />
+              </label>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 max-w-[1600px] mx-auto w-full p-4">
-        <div className="mb-6 flex flex-col md:flex-row gap-4 items-center">
-          <div className="relative flex-1 w-full">
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-gray-400">
-              🔍
+        {/* Secondary Toolbar for Multi-select Actions */}
+        {isMultiSelect && (
+          <div className="mb-6 flex flex-wrap items-center gap-3 animate-in slide-in-from-top-4 duration-300">
+            <button 
+              onClick={selectAllFiltered}
+              className="px-6 py-2.5 bg-yellow-400 text-orange-900 border-2 border-yellow-500 rounded-xl font-bold text-xs uppercase hover:bg-yellow-300 transition-colors shadow-sm"
+            >
+              SELECT ALL / 全選
+            </button>
+            <button 
+              onClick={deselectAll}
+              className="px-6 py-2.5 bg-yellow-100 text-orange-800 border-2 border-yellow-200 rounded-xl font-bold text-xs uppercase hover:bg-yellow-200 transition-colors shadow-sm"
+            >
+              NONE / 取消
+            </button>
+            <div className="px-4 py-2 text-orange-900 font-bold text-xs bg-yellow-50 rounded-lg border border-yellow-300 shadow-inner">
+              {selectedIds.size} Selected / 已選擇
             </div>
-            <input 
-              type="text" 
-              placeholder="Search Student Name or Roll No..."
-              className="w-full pl-12 pr-4 py-3 rounded-xl shadow-sm border-2 border-gray-100 focus:border-pokemon-blue focus:ring-4 focus:ring-blue-100 transition-all outline-none text-lg bg-white"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
           </div>
-          <div className="px-4 py-2 bg-white rounded-xl border border-gray-200 text-gray-500 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-green-500"></span>
-            Students: {filteredStudents.length} / 總人數
-          </div>
-        </div>
+        )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 pb-24">
           {filteredStudents.map((student, index) => (
             <StudentCard 
               key={student.id} 
               student={student} 
+              isSelected={selectedIds.has(student.id)}
+              isMultiSelectMode={isMultiSelect}
               rank={sortType === SortType.SCORE_DESC ? index + 1 : undefined}
-              onClick={() => setActingStudent(student)}
+              onClick={() => {
+                if (isMultiSelect) {
+                  toggleSelection(student.id);
+                } else {
+                  setActingStudent(student);
+                }
+              }}
               onPokemonClick={(e) => {
                 e.stopPropagation();
-                setPokeselStudent(student);
+                if (!isMultiSelect) setPokeselStudent(student);
               }}
             />
           ))}
@@ -328,29 +441,34 @@ const App: React.FC = () => {
         {filteredStudents.length === 0 && (
           <div className="flex flex-col items-center justify-center py-32 text-gray-400">
             <div className="text-6xl mb-4 opacity-20">👻</div>
-            <p className="text-xl font-black uppercase tracking-widest opacity-50">No Students Found / 找不到相關學生</p>
+            <p className="text-xl font-black uppercase tracking-widest opacity-50">No Students Found</p>
           </div>
         )}
       </main>
 
-      {/* Random Pick Shuffling Modal */}
+      {/* Bulk Action Bar */}
+      {isMultiSelect && selectedIds.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-10">
+          <button 
+            onClick={() => setBulkActing(true)}
+            className="px-10 py-5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-orange-900 font-black rounded-full shadow-[0_10px_40px_rgba(245,158,11,0.5)] border-b-8 border-yellow-700 hover:scale-105 active:scale-95 transition-all text-lg flex items-center gap-3"
+          >
+            ⭐ APPLY TO {selectedIds.size} SELECTED / 批量評分
+          </button>
+        </div>
+      )}
+
+      {/* Overlays */}
       {isShuffling && shuffleDisplay && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 backdrop-blur-md">
           <div className="text-center p-8 rounded-3xl border-8 border-pokemon-yellow animate-in zoom-in">
             <h2 className="pokemon-font text-white text-3xl mb-12 animate-pulse">WHO'S NEXT?...</h2>
-            <div className="relative">
-              <div className="absolute inset-0 bg-yellow-500/20 blur-3xl rounded-full"></div>
-              <img 
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shuffleDisplay.pokemonId}.png`}
-                className="w-64 h-64 object-contain mx-auto relative z-10 shuffle-item"
-              />
-            </div>
+            <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shuffleDisplay.pokemonId}.png`} className="w-64 h-64 object-contain mx-auto relative z-10" />
             <p className="pokemon-font text-yellow-400 text-2xl mt-8">#{shuffleDisplay.rollNo} {shuffleDisplay.name}</p>
           </div>
         </div>
       )}
 
-      {/* Overlays */}
       {feedback && (
         <FeedbackOverlay 
           student={feedback.student} 
@@ -360,10 +478,10 @@ const App: React.FC = () => {
         />
       )}
 
-      {actingStudent && !isShuffling && (
+      {(actingStudent || bulkActing) && !isShuffling && (
         <ActionModal 
-          student={actingStudent} 
-          onClose={() => setActingStudent(null)} 
+          student={actingStudent || { name: `${selectedIds.size} Students / 多位同學`, rollNo: 0, pokemonId: 25 } as any} 
+          onClose={() => { setActingStudent(null); setBulkActing(false); }} 
           onAction={handleAction}
           onManualPoint={handleManualPoint}
         />
