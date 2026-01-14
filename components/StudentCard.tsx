@@ -4,14 +4,14 @@ import { Student } from '../types';
 
 interface StudentCardProps {
   student: Student;
+  rank?: number;
   onClick: () => void;
   onPokemonClick: (e: React.MouseEvent) => void;
 }
 
-export const StudentCard: React.FC<StudentCardProps> = ({ student, onClick, onPokemonClick }) => {
+export const StudentCard: React.FC<StudentCardProps> = ({ student, rank, onClick, onPokemonClick }) => {
   const pokemonImg = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${student.pokemonId}.png`;
 
-  // Safely handle legacy data missing new fields
   const posVal = student.posPoints || 0;
   const negVal = student.negPoints || 0;
   const totalVal = student.points || 0;
@@ -24,6 +24,12 @@ export const StudentCard: React.FC<StudentCardProps> = ({ student, onClick, onPo
       <div className="absolute top-2 left-2 bg-gray-200 text-gray-600 text-[10px] px-2 py-0.5 rounded-full font-bold">
         #{student.rollNo}
       </div>
+
+      {rank !== undefined && (
+        <div className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-[10px] px-2 py-0.5 rounded-full font-black shadow-sm ring-2 ring-yellow-200">
+          RANK {rank}
+        </div>
+      )}
       
       <div 
         className="relative w-28 h-28 mt-2 mb-3 bg-gray-50 rounded-full flex items-center justify-center border-4 border-gray-100 group-hover:bg-yellow-50 transition-colors"

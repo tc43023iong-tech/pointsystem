@@ -19,13 +19,16 @@ const App: React.FC = () => {
   const [pokeselStudent, setPokeselStudent] = useState<Student | null>(null);
   const [feedback, setFeedback] = useState<{ student: Student, type: 'positive' | 'negative', reason?: string } | null>(null);
   
-  // Random Picker State
+  // Random Picker State - Maps classId to list of student IDs already picked
+  const [pickedIdsMap, setPickedIdsMap] = useState<Record<string, string[]>>({});
   const [isShuffling, setIsShuffling] = useState(false);
   const [shuffleDisplay, setShuffleDisplay] = useState<Student | null>(null);
 
   // Initialize data
   useEffect(() => {
     const saved = localStorage.getItem('miss_iong_class_data');
+    const savedPicked = localStorage.getItem('miss_iong_picked_history');
+    
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -39,14 +42,26 @@ const App: React.FC = () => {
       setClasses(INITIAL_CLASSES);
       setSelectedClassId(INITIAL_CLASSES[0].id);
     }
+
+    if (savedPicked) {
+      try {
+        setPickedIdsMap(JSON.parse(savedPicked));
+      } catch (e) {
+        setPickedIdsMap({});
+      }
+    }
   }, []);
 
-  // Save on change
+  // Save data on change
   useEffect(() => {
     if (classes.length > 0) {
       localStorage.setItem('miss_iong_class_data', JSON.stringify(classes));
     }
   }, [classes]);
+
+  useEffect(() => {
+    localStorage.setItem('miss_iong_picked_history', JSON.stringify(pickedIdsMap));
+  }, [pickedIdsMap]);
 
   const currentClass = useMemo(() => 
     classes.find(c => c.id === selectedClassId)
@@ -141,13 +156,24 @@ const App: React.FC = () => {
   const handleRandomPick = () => {
     if (filteredStudents.length === 0) return;
     
+    const classPickedHistory = pickedIdsMap[selectedClassId] || [];
+    
+    // Find students who haven't been picked yet
+    let pool = filteredStudents.filter(s => !classPickedHistory.includes(s.id));
+    
+    // If everyone in the current filtered list has been picked, reset the pool
+    if (pool.length === 0) {
+      pool = filteredStudents;
+      // We clear the history for this class to start fresh cycle
+      setPickedIdsMap(prev => ({ ...prev, [selectedClassId]: [] }));
+    }
+
     setIsShuffling(true);
     let count = 0;
     const maxShuffle = 18;
     
-    // Select the final winner immediately so the shuffle lands on them
-    const winnerIndex = Math.floor(Math.random() * filteredStudents.length);
-    const winner = filteredStudents[winnerIndex];
+    const winnerIndex = Math.floor(Math.random() * pool.length);
+    const winner = pool[winnerIndex];
 
     const interval = setInterval(() => {
       if (count < maxShuffle) {
@@ -158,8 +184,15 @@ const App: React.FC = () => {
         clearInterval(interval);
         setTimeout(() => {
           setIsShuffling(false);
-          // Immediately open the ActionModal for the winner
           setActingStudent(winner);
+          // Mark as picked
+          setPickedIdsMap(prev => {
+            const currentHistory = prev[selectedClassId] || [];
+            if (!currentHistory.includes(winner.id)) {
+              return { ...prev, [selectedClassId]: [...currentHistory, winner.id] };
+            }
+            return prev;
+          });
         }, 500);
       }
       count++;
@@ -199,6 +232,8 @@ const App: React.FC = () => {
     e.target.value = '';
   };
 
+  const pickedCount = (pickedIdsMap[selectedClassId] || []).filter(id => filteredStudents.some(fs => fs.id === id)).length;
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -213,7 +248,7 @@ const App: React.FC = () => {
               onClick={handleRandomPick}
               className="h-10 px-4 bg-yellow-400 text-red-700 font-black rounded-lg hover:bg-yellow-300 transition-all text-[11px] uppercase border-b-2 border-yellow-600 flex items-center gap-2 whitespace-nowrap shadow-md"
             >
-              <span className="text-base">🎯</span> RANDOM PICK / 隨機抽籤
+              <span className="text-base">🎯</span> RANDOM PICK ({pickedCount}/{filteredStudents.length})
             </button>
 
             <select 
@@ -276,10 +311,11 @@ const App: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-          {filteredStudents.map(student => (
+          {filteredStudents.map((student, index) => (
             <StudentCard 
               key={student.id} 
               student={student} 
+              rank={sortType === SortType.SCORE_DESC ? index + 1 : undefined}
               onClick={() => setActingStudent(student)}
               onPokemonClick={(e) => {
                 e.stopPropagation();

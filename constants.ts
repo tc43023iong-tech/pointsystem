@@ -4,29 +4,23 @@ import { PointAction } from './types';
 export const POKEMON_COUNT = 500;
 
 export const ACTIONS: PointAction[] = [
-  // Positive (加分行為) - Ordered as requested
+  // Positive (加分行為)
   { labelEn: "GOOD PARTICIPATION", labelZh: "積極參與", points: 1, type: 'positive' },
   { labelEn: "QUICK RESPONSE", labelZh: "快速回答", points: 1, type: 'positive' },
   { labelEn: "WELL CONCENTRATED", labelZh: "專心上課", points: 1, type: 'positive' },
-  { labelEn: "PROACTIVE", labelZh: "主動積極", points: 1, type: 'positive' },
-  { labelEn: "TIDY DESK", labelZh: "桌面整潔", points: 1, type: 'positive' },
   { labelEn: "QUIET READING", labelZh: "安靜閱讀", points: 1, type: 'positive' },
-  { labelEn: "BRAVE SPEAKER", labelZh: "勇於發言", points: 1, type: 'positive' },
   { labelEn: "QUIET EATING", labelZh: "安靜吃飯", points: 1, type: 'positive' },
   { labelEn: "PARTICIPATING IN EXERCISES", labelZh: "配合做課間操", points: 1, type: 'positive' },
-  { labelEn: "RESPECT MISS IONG!", labelZh: "尊重容老師！", points: 2, type: 'positive' },
+  { labelEn: "RESPECT MISS IONG!", labelZh: "尊重容老師！", points: 3, type: 'positive' },
   
-  // Negative (減分行為) - Ordered as requested
+  // Negative (減分行為)
   { labelEn: "DISTURBING CLASS", labelZh: "干擾課堂", points: -1, type: 'negative' },
   { labelEn: "BAD ATTITUDE", labelZh: "態度欠佳", points: -1, type: 'negative' },
   { labelEn: "NOISY", labelZh: "過於吵鬧", points: -1, type: 'negative' },
   { labelEn: "LEAVING SEAT", labelZh: "離開座位", points: -1, type: 'negative' },
   { labelEn: "NOT PAYING ATTENTION", labelZh: "不專心", points: -1, type: 'negative' },
-  { labelEn: "UNTIDY AREA", labelZh: "座位凌亂", points: -1, type: 'negative' },
-  { labelEn: "INTERRUPTING", labelZh: "插嘴", points: -1, type: 'negative' },
   { labelEn: "CHATTING IN CLASS", labelZh: "課上聊天", points: -1, type: 'negative' },
-  { labelEn: "DISRESPECTFUL TO MISS IONG", labelZh: "對容老師無禮", points: -2, type: 'negative' },
-  { labelEn: "SLEEPY IN CLASS", labelZh: "課堂睡覺", points: -1, type: 'negative' },
+  { labelEn: "DISRESPECTFUL TO MISS IONG", labelZh: "對容老師無禮", points: -3, type: 'negative' },
 ];
 
 const parseClassList = (name: string, list: string): any[] => {

@@ -9,37 +9,46 @@ interface FeedbackOverlayProps {
   onComplete: () => void;
 }
 
-interface Particle {
-  id: number;
-  dx: string;
-  dy: string;
-  color: string;
-  delay: string;
-  size: string;
-}
-
 export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type, reason, onComplete }) => {
   const isPos = type === 'positive';
   
-  // Generate particles with random directions and properties
+  // Generate multi-layered particles for a "blooming" firework effect
   const particles = useMemo(() => {
     if (!isPos) return [];
-    return Array.from({ length: 60 }).map((_, i) => {
+    
+    const count = 120; // Denser particles
+    const layers = 3;  // Three distinct "waves" of the bloom
+    
+    return Array.from({ length: count }).map((_, i) => {
+      const layer = i % layers;
       const angle = Math.random() * Math.PI * 2;
-      const distance = 150 + Math.random() * 300; // Pixels to travel
+      
+      // Different distances for blooming effect
+      const baseDistance = layer === 0 ? 120 : layer === 1 ? 240 : 360;
+      const distance = baseDistance + Math.random() * 80;
+      
+      const colors = [
+        '#FF3F3F', // Red
+        '#FFD700', // Gold
+        '#00E5FF', // Cyan
+        '#FF00FF', // Magenta
+        '#7CFF01', // Lime
+        '#FFFFFF'  // White spark
+      ];
+
       return {
         id: i,
         dx: `${Math.cos(angle) * distance}px`,
         dy: `${Math.sin(angle) * distance}px`,
-        color: ['#ffeb3b', '#ff5722', '#4caf50', '#2196f3', '#e91e63', '#ffffff', '#00bcd4'][Math.floor(Math.random() * 7)],
-        delay: `${Math.random() * 0.1}s`,
-        size: `${Math.random() * 8 + 4}px`
+        color: colors[Math.floor(Math.random() * colors.length)],
+        delay: `${(layer * 0.15) + (Math.random() * 0.1)}s`, // Staggered layers
+        duration: `${0.6 + Math.random() * 0.4}s`,
+        size: layer === 0 ? '12px' : '8px'
       };
     });
   }, [isPos]);
 
   useEffect(() => {
-    // Set duration to 1.25 seconds as requested
     const timer = setTimeout(onComplete, 1250);
     return () => clearTimeout(timer);
   }, [onComplete]);
@@ -50,9 +59,9 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-300">
       <div className={`relative w-full max-w-lg rounded-[3rem] p-8 md:p-10 shadow-2xl border-8 border-white overflow-visible transition-all transform animate-in zoom-in slide-in-from-bottom-10 duration-500 ${isPos ? 'bg-yellow-400' : 'bg-red-400'}`}>
         
-        {/* Firework Particles Container (Centered) */}
+        {/* Firework Particles Container */}
         {isPos && (
-          <div className="absolute inset-0 pointer-events-none overflow-visible">
+          <div className="absolute inset-0 pointer-events-none overflow-visible flex items-center justify-center">
             {particles.map(p => (
               <div 
                 key={p.id} 
@@ -60,9 +69,10 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
                 style={{ 
                   '--dx': p.dx, 
                   '--dy': p.dy, 
-                  backgroundColor: p.color,
+                  '--duration': p.duration,
+                  color: p.color,
+                  backgroundColor: 'currentColor',
                   animationDelay: p.delay,
-                  animationDuration: '0.8s', // Faster fireworks to fit 1.25s
                   width: p.size,
                   height: p.size
                 } as React.CSSProperties}
@@ -72,7 +82,6 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
         )}
 
         <div className="relative z-10 flex flex-col items-center text-center">
-          {/* Header Title */}
           <div className="text-white mb-6">
             <h2 className="pokemon-font text-xl md:text-2xl mb-1 drop-shadow-lg tracking-tight">
               {isPos ? 'CONGRATULATIONS!' : 'KEEP WORKING HARD!'}
@@ -82,7 +91,6 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
             </h3>
           </div>
 
-          {/* Student Name & Reason (Above Pokemon) */}
           <div className="w-full space-y-3 mb-8">
              <div className="bg-white/30 backdrop-blur-md rounded-2xl py-3 px-6 border-2 border-white/50 shadow-inner">
                 <p className="text-white text-2xl md:text-3xl font-black drop-shadow-md">
@@ -99,13 +107,11 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
              )}
           </div>
 
-          {/* Pokemon Image Block */}
           <div className={`relative mb-8 ${!isPos ? 'animate-shake' : 'animate-bounce'}`}>
             <div className={`absolute inset-0 blur-3xl rounded-full scale-150 ${isPos ? 'bg-white/40' : 'bg-white/20'}`}></div>
             <img src={pokemonImg} className="w-40 h-40 md:w-56 md:h-56 relative z-10 drop-shadow-2xl object-contain" alt="Student Pokemon" />
           </div>
 
-          {/* Total Score Footer */}
           <div className="w-full">
             <div className="bg-black/20 backdrop-blur-sm rounded-3xl p-4 md:p-6 border-4 border-white/30 shine-effect">
               <div className="text-white text-xs md:text-sm font-bold uppercase tracking-widest opacity-80 mb-1">Current Total / 目前總分</div>
