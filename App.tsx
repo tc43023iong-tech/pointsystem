@@ -249,12 +249,16 @@ const App: React.FC = () => {
     const maxShuffle = 18;
     const winnerIndex = Math.floor(Math.random() * pool.length);
     const winner = pool[winnerIndex];
+    
     const interval = setInterval(() => {
       if (count < maxShuffle) {
         const randomIndex = Math.floor(Math.random() * filteredStudents.length);
         setShuffleDisplay(filteredStudents[randomIndex]);
+        // Play tick sound with rising pitch for tension
+        audioService.playShuffleTick(count, maxShuffle);
       } else {
         setShuffleDisplay(winner);
+        audioService.playShuffleSuccess();
         clearInterval(interval);
         setTimeout(() => {
           setIsShuffling(false);

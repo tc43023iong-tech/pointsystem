@@ -9,6 +9,58 @@ class AudioService {
   }
 
   /**
+   * Plays a short percussive tick for the shuffling animation.
+   * The pitch can rise to increase tension.
+   */
+  public playShuffleTick(count: number, total: number) {
+    this.init();
+    if (!this.ctx) return;
+    
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    // Frequency rises from 440Hz (A4) to 880Hz (A5) as the shuffle progresses
+    const freq = 440 + (count / total) * 440;
+    osc.frequency.setValueAtTime(freq, now);
+    
+    osc.type = 'square';
+    gain.gain.setValueAtTime(0.03, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    
+    osc.start();
+    osc.stop(now + 0.05);
+  }
+
+  /**
+   * Plays a distinct "impact" sound when a winner is chosen.
+   */
+  public playShuffleSuccess() {
+    this.init();
+    if (!this.ctx) return;
+    
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.exponentialRampToValueAtTime(1320, now + 0.1); // Rise to E6
+    
+    gain.gain.setValueAtTime(0.1, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    
+    osc.start();
+    osc.stop(now + 0.3);
+  }
+
+  /**
    * Plays a cheerful, rising 4-note melodic chime (C5-E5-G5-C6)
    * to signify a happy and successful point-up event.
    */
@@ -24,7 +76,6 @@ class AudioService {
       const osc = this.ctx!.createOscillator();
       const gain = this.ctx!.createGain();
       
-      // Use triangle for a cleaner, sweeter "game chime" sound
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, now + i * noteDuration);
       
@@ -51,10 +102,8 @@ class AudioService {
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
     
-    // Sawtooth provides a "buzzy", slightly harsher tone suitable for negative feedback
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(293.66, now); // D4
-    // Rapid slide down to a low rumble
     osc.frequency.exponentialRampToValueAtTime(73.42, now + 0.4); // D2
     
     gain.gain.setValueAtTime(0.15, now);
@@ -66,7 +115,6 @@ class AudioService {
     osc.start();
     osc.stop(now + 0.4);
 
-    // Add a secondary dissonant low oscillator for more "impact"
     const subOsc = this.ctx.createOscillator();
     const subGain = this.ctx.createGain();
     subOsc.type = 'sine';
