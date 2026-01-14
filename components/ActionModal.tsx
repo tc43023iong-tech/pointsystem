@@ -41,67 +41,67 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
         </div>
         
         <div className="p-6 overflow-y-auto flex-1">
-          <div className="mb-6 bg-gray-50 p-4 rounded-2xl border-2 border-dashed border-gray-200">
-            <h4 className="font-bold text-gray-500 uppercase text-xs tracking-widest mb-3">MANUAL INPUT / 手動輸入分數</h4>
+          <div className="mb-6 bg-gray-50 p-3 rounded-2xl border-2 border-dashed border-gray-200">
+            <h4 className="font-bold text-gray-500 uppercase text-[10px] tracking-widest mb-2">MANUAL INPUT / 手動輸入</h4>
             <form onSubmit={handleManualSubmit} className="flex gap-2">
               <input 
                 type="number"
-                placeholder="Enter points (e.g. 10 or -5)..."
-                className="flex-1 p-3 rounded-xl border-2 border-gray-200 focus:border-pokemon-blue outline-none text-lg"
+                placeholder="Points..."
+                className="flex-1 p-2 rounded-xl border-2 border-gray-200 focus:border-pokemon-blue outline-none text-base"
                 value={manualValue}
                 onChange={(e) => setManualValue(e.target.value)}
               />
               <button 
                 type="submit"
-                className="bg-pokemon-blue text-white font-bold px-6 py-3 rounded-xl hover:bg-blue-600 transition-colors"
+                className="bg-pokemon-blue text-white font-bold px-4 py-2 rounded-xl hover:bg-blue-600 transition-colors text-sm"
               >
                 Apply / 應用
               </button>
             </form>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Positive Column */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 pb-2 border-b-2 border-green-200">
-                <span className="text-2xl">⭐</span>
-                <p className="font-black text-green-600 uppercase tracking-widest">POSITIVE / 加分行為</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 pb-1 border-b-2 border-green-200">
+                <span className="text-xl">⭐</span>
+                <p className="font-black text-green-600 uppercase tracking-widest text-xs">POSITIVE / 加分行為</p>
               </div>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-1.5">
                 {ACTIONS.filter(a => a.type === 'positive').map((action, idx) => (
                   <button
                     key={idx}
                     onClick={() => onAction(action)}
-                    className="w-full flex justify-between items-center p-3 rounded-xl bg-green-50 border-2 border-green-100 hover:border-green-500 hover:bg-green-100 transition-all text-left group"
+                    className="w-full flex justify-between items-center p-2.5 rounded-xl bg-green-50 border-2 border-green-100 hover:border-green-500 hover:bg-green-100 transition-all text-left group"
                   >
-                    <div>
-                      <div className="font-bold text-green-800 text-sm">{action.labelZh}</div>
-                      <div className="text-[10px] text-green-600 italic uppercase">{action.labelEn}</div>
+                    <div className="flex items-baseline gap-2 overflow-hidden mr-2">
+                      <span className="font-bold text-green-800 text-sm whitespace-nowrap">{action.labelZh}</span>
+                      <span className="text-[10px] text-green-600 italic truncate opacity-80">{action.labelEn.toLowerCase()}</span>
                     </div>
-                    <div className="text-lg font-black text-green-600 group-hover:scale-125 transition-transform">+{action.points}</div>
+                    <div className="text-base font-black text-green-600 group-hover:scale-110 transition-transform">+{action.points}</div>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Negative Column */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 pb-2 border-b-2 border-red-200">
-                <span className="text-2xl">⚠️</span>
-                <p className="font-black text-red-600 uppercase tracking-widest">NEGATIVE / 減分行為</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 pb-1 border-b-2 border-red-200">
+                <span className="text-xl">⚠️</span>
+                <p className="font-black text-red-600 uppercase tracking-widest text-xs">NEGATIVE / 減分行為</p>
               </div>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="grid grid-cols-1 gap-1.5">
                 {ACTIONS.filter(a => a.type === 'negative').map((action, idx) => (
                   <button
                     key={idx}
                     onClick={() => onAction(action)}
-                    className="w-full flex justify-between items-center p-3 rounded-xl bg-red-50 border-2 border-red-100 hover:border-red-500 hover:bg-red-100 transition-all text-left group"
+                    className="w-full flex justify-between items-center p-2.5 rounded-xl bg-red-50 border-2 border-red-100 hover:border-red-500 hover:bg-red-100 transition-all text-left group"
                   >
-                    <div>
-                      <div className="font-bold text-red-800 text-sm">{action.labelZh}</div>
-                      <div className="text-[10px] text-red-600 italic uppercase">{action.labelEn}</div>
+                    <div className="flex items-baseline gap-2 overflow-hidden mr-2">
+                      <span className="font-bold text-red-800 text-sm whitespace-nowrap">{action.labelZh}</span>
+                      <span className="text-[10px] text-red-600 italic truncate opacity-80">{action.labelEn.toLowerCase()}</span>
                     </div>
-                    <div className="text-lg font-black text-red-600 group-hover:scale-125 transition-transform">{action.points}</div>
+                    <div className="text-base font-black text-red-600 group-hover:scale-110 transition-transform">{action.points}</div>
                   </button>
                 ))}
               </div>
@@ -109,8 +109,8 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
           </div>
         </div>
         
-        <div className="bg-gray-100 p-4 text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest shrink-0">
-          Command Menu System v2.0 - Miss Iong's Class
+        <div className="bg-gray-100 p-3 text-center text-[9px] text-gray-400 font-bold uppercase tracking-widest shrink-0">
+          Miss Iong's Class System
         </div>
       </div>
     </div>
