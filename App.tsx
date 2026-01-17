@@ -157,7 +157,7 @@ const App: React.FC = () => {
   const handleAction = (action: PointAction) => {
     const isPos = action.type === 'positive';
     const pointsDelta = action.points;
-    const reason = `${action.labelZh} / ${action.labelEn}`;
+    const reason = action.labelZh;
 
     if (bulkActing) {
       const targetStudents = filteredStudents.filter(s => selectedIds.has(s.id));
@@ -171,7 +171,7 @@ const App: React.FC = () => {
       
       const groupStudent: Student = {
         id: 'group',
-        name: `${selectedIds.size} Students / 多位同學`,
+        name: `${selectedIds.size} 位同學`,
         rollNo: 0,
         pokemonId: 25,
         points: pointsDelta,
@@ -200,7 +200,7 @@ const App: React.FC = () => {
   const handleManualPoint = (points: number) => {
     const isPos = points > 0;
     const isNeg = points < 0;
-    const reason = "Manual / 手動調整";
+    const reason = "手動調整";
 
     if (bulkActing) {
       const targetStudents = filteredStudents.filter(s => selectedIds.has(s.id));
@@ -214,7 +214,7 @@ const App: React.FC = () => {
       
       const groupStudent: Student = {
         id: 'group',
-        name: `${selectedIds.size} Students / 多位同學`,
+        name: `${selectedIds.size} 位同學`,
         rollNo: 0,
         pokemonId: 25,
         points: points,
@@ -605,7 +605,7 @@ const App: React.FC = () => {
 
       {(actingStudent || bulkActing) && !isShuffling && (
         <ActionModal 
-          student={actingStudent || { name: `${selectedIds.size} Students / 多位同學`, rollNo: 0, pokemonId: 25 } as any} 
+          student={actingStudent || { name: `${selectedIds.size} 位同學`, rollNo: 0, pokemonId: 25 } as any} 
           onClose={() => { setActingStudent(null); setBulkActing(false); }} 
           onAction={handleAction}
           onManualPoint={handleManualPoint}
