@@ -19,6 +19,7 @@ const App: React.FC = () => {
   const [bulkActing, setBulkActing] = useState<boolean>(false);
   const [pokeselStudent, setPokeselStudent] = useState<Student | null>(null);
   const [feedback, setFeedback] = useState<{ student: Student, type: 'positive' | 'negative', reason?: string } | null>(null);
+  const [showRules, setShowRules] = useState(false);
   
   // Multi-select State
   const [isMultiSelect, setIsMultiSelect] = useState(false);
@@ -28,6 +29,25 @@ const App: React.FC = () => {
   const [pickedIdsMap, setPickedIdsMap] = useState<Record<string, string[]>>({});
   const [isShuffling, setIsShuffling] = useState(false);
   const [shuffleDisplay, setShuffleDisplay] = useState<Student | null>(null);
+
+  // Fireworks for shuffle
+  const shuffleParticles = useMemo(() => {
+    const count = 100;
+    const colors = ['#FF3F3F', '#FFD700', '#00E5FF', '#FF00FF', '#7CFF01', '#FFFFFF', '#FFA500'];
+    return Array.from({ length: count }).map((_, i) => {
+      const angle = Math.random() * Math.PI * 2;
+      const distance = 150 + Math.random() * 450;
+      return {
+        id: i,
+        dx: `${Math.cos(angle) * distance}px`,
+        dy: `${Math.sin(angle) * distance}px`,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        delay: `${Math.random() * 2}s`,
+        duration: `${0.8 + Math.random() * 0.7}s`,
+        size: `${Math.random() * 8 + 4}px`
+      };
+    });
+  }, []);
 
   // Initialize data
   useEffect(() => {
@@ -254,7 +274,6 @@ const App: React.FC = () => {
       if (count < maxShuffle) {
         const randomIndex = Math.floor(Math.random() * filteredStudents.length);
         setShuffleDisplay(filteredStudents[randomIndex]);
-        // Play tick sound with rising pitch for tension
         audioService.playShuffleTick(count, maxShuffle);
       } else {
         setShuffleDisplay(winner);
@@ -305,18 +324,13 @@ const App: React.FC = () => {
 
   const pickedCount = (pickedIdsMap[selectedClassId] || []).filter(id => filteredStudents.some(fs => fs.id === id)).length;
 
-  // Unified Button & Control Styles
   const headerControlBase = "h-10 px-4 rounded-xl font-black text-[10px] md:text-[11px] uppercase tracking-tight flex items-center justify-center gap-2 transition-all shadow-md border-2 whitespace-nowrap";
-  
-  // Color themes
   const yellowBtnStyle = "bg-yellow-400 text-orange-900 border-yellow-300 hover:bg-yellow-300 active:translate-y-0.5";
   const orangeBtnStyle = "bg-orange-500 text-white border-orange-400 hover:bg-orange-400 active:translate-y-0.5 shadow-orange-900/10";
-  
   const selectBase = "h-10 px-3 bg-white/10 border-white/20 rounded-xl text-xs font-bold text-white focus:outline-none cursor-pointer hover:bg-white/20 transition-colors shadow-sm outline-none";
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Unified Header */}
       <header className="bg-pokemon-red text-white p-3 shadow-xl sticky top-0 z-40 border-b-4 border-black/10">
         <div className="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
@@ -324,7 +338,15 @@ const App: React.FC = () => {
           </div>
           
           <div className="flex flex-wrap items-center gap-2">
-            {/* Functional Buttons - Yellow */}
+            {/* 🔔 Rules Button */}
+            <button 
+              onClick={() => setShowRules(true)}
+              className="w-10 h-10 bg-yellow-400 text-orange-900 rounded-xl border-2 border-yellow-300 hover:bg-yellow-300 flex items-center justify-center shadow-md active:translate-y-0.5 transition-all text-lg"
+              title="Scoring Rules / 加分細則"
+            >
+              🔔
+            </button>
+
             <button 
               onClick={() => {
                 setIsMultiSelect(!isMultiSelect);
@@ -346,7 +368,6 @@ const App: React.FC = () => {
               🎯 RANDOM PICK ({pickedCount}/{filteredStudents.length})
             </button>
 
-            {/* Settings Group */}
             <div className="flex items-center gap-2">
               <select 
                 className={selectBase}
@@ -370,7 +391,6 @@ const App: React.FC = () => {
               </select>
             </div>
 
-            {/* Data Buttons - Distinct Orange Warm Theme */}
             <div className="flex items-center gap-2">
               <button 
                 onClick={() => {
@@ -396,9 +416,7 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 max-w-[1600px] mx-auto w-full p-4">
-        {/* Secondary Toolbar for Multi-select Actions */}
         {isMultiSelect && (
           <div className="mb-6 flex flex-wrap items-center gap-3 animate-in slide-in-from-top-4 duration-300">
             <button 
@@ -450,7 +468,6 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* Bulk Action Bar */}
       {isMultiSelect && selectedIds.size > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-10">
           <button 
@@ -462,13 +479,67 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {/* Overlays */}
+      {/* Rules Modal */}
+      {showRules && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in duration-200">
+            <div className="bg-yellow-400 p-6 flex justify-between items-center">
+              <h2 className="text-xl font-black text-orange-900 uppercase">Scoring Rules / 加分細則</h2>
+              <button onClick={() => setShowRules(false)} className="text-orange-900 text-3xl font-black">&times;</button>
+            </div>
+            <div className="p-8">
+              <h3 className="text-lg font-black text-orange-800 mb-6 border-b-4 border-yellow-200 pb-2">默書/測驗 加分</h3>
+              <div className="space-y-4">
+                {[
+                  { range: "100或以上", points: "+25" },
+                  { range: "90～99", points: "+20" },
+                  { range: "80～89", points: "+15" },
+                  { range: "70～79", points: "+10" },
+                  { range: "60～69", points: "+5" },
+                ].map((rule, idx) => (
+                  <div key={idx} className="flex justify-between items-center bg-yellow-50 p-4 rounded-2xl border-2 border-yellow-100">
+                    <span className="font-bold text-gray-700 text-lg">{rule.range}</span>
+                    <span className="font-black text-orange-600 text-2xl">{rule.points}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-gray-100 p-4 text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+              Classroom Excellence Program
+            </div>
+          </div>
+        </div>
+      )}
+
       {isShuffling && shuffleDisplay && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 backdrop-blur-md">
-          <div className="text-center p-8 rounded-3xl border-8 border-pokemon-yellow animate-in zoom-in">
-            <h2 className="pokemon-font text-white text-3xl mb-12 animate-pulse">WHO'S NEXT?...</h2>
-            <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shuffleDisplay.pokemonId}.png`} className="w-64 h-64 object-contain mx-auto relative z-10" />
-            <p className="pokemon-font text-yellow-400 text-2xl mt-8">#{shuffleDisplay.rollNo} {shuffleDisplay.name}</p>
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/95 backdrop-blur-md">
+          {/* Continuous Fireworks Background for Shuffling */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+            {shuffleParticles.map(p => (
+              <div 
+                key={p.id} 
+                className="firework-particle firework-infinite" 
+                style={{ 
+                  '--dx': p.dx, 
+                  '--dy': p.dy, 
+                  '--duration': p.duration,
+                  color: p.color,
+                  backgroundColor: 'currentColor',
+                  animationDelay: p.delay,
+                  width: p.size,
+                  height: p.size
+                } as React.CSSProperties}
+              />
+            ))}
+          </div>
+
+          <div className="text-center p-8 rounded-3xl border-8 border-pokemon-yellow bg-black/40 backdrop-blur-sm relative z-[120] shadow-[0_0_100px_rgba(255,235,59,0.3)] animate-in zoom-in duration-300">
+            <h2 className="pokemon-font text-white text-3xl mb-12 animate-pulse tracking-tighter">WHO'S NEXT?...</h2>
+            <div className="relative">
+               <div className="absolute inset-0 bg-white/20 blur-[80px] rounded-full animate-pulse"></div>
+               <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shuffleDisplay.pokemonId}.png`} className="w-64 h-64 object-contain mx-auto relative z-10" />
+            </div>
+            <p className="pokemon-font text-yellow-400 text-2xl mt-8 drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">#{shuffleDisplay.rollNo} {shuffleDisplay.name}</p>
           </div>
         </div>
       )}
