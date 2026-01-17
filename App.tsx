@@ -18,7 +18,7 @@ const App: React.FC = () => {
   const [actingStudent, setActingStudent] = useState<Student | null>(null);
   const [bulkActing, setBulkActing] = useState<boolean>(false);
   const [pokeselStudent, setPokeselStudent] = useState<Student | null>(null);
-  const [feedback, setFeedback] = useState<{ student: Student, type: 'positive' | 'negative', reason?: string } | null>(null);
+  const [feedback, setFeedback] = useState<{ student: Student, type: 'positive' | 'negative', reason?: string, delta: number } | null>(null);
   const [showRules, setShowRules] = useState(false);
   
   // Multi-select State
@@ -28,23 +28,24 @@ const App: React.FC = () => {
   // Random Picker State
   const [pickedIdsMap, setPickedIdsMap] = useState<Record<string, string[]>>({});
   const [isShuffling, setIsShuffling] = useState(false);
-  const [shuffleDisplay, setShuffleDisplay] = useState<Student | null>(null);
+  const [shuffleIndex, setShuffleIndex] = useState<number>(-1);
+  const [shufflingWinner, setShufflingWinner] = useState<Student | null>(null);
 
   // Fireworks for shuffle
   const shuffleParticles = useMemo(() => {
-    const count = 100;
+    const count = 120;
     const colors = ['#FF3F3F', '#FFD700', '#00E5FF', '#FF00FF', '#7CFF01', '#FFFFFF', '#FFA500'];
     return Array.from({ length: count }).map((_, i) => {
       const angle = Math.random() * Math.PI * 2;
-      const distance = 150 + Math.random() * 450;
+      const distance = 100 + Math.random() * 500;
       return {
         id: i,
         dx: `${Math.cos(angle) * distance}px`,
         dy: `${Math.sin(angle) * distance}px`,
         color: colors[Math.floor(Math.random() * colors.length)],
         delay: `${Math.random() * 2}s`,
-        duration: `${0.8 + Math.random() * 0.7}s`,
-        size: `${Math.random() * 8 + 4}px`
+        duration: `${0.6 + Math.random() * 0.8}s`,
+        size: `${Math.random() * 10 + 4}px`
       };
     });
   }, []);
@@ -145,10 +146,10 @@ const App: React.FC = () => {
 
   const triggerFeedback = (student: Student, delta: number, reason?: string) => {
     if (delta > 0) {
-      setFeedback({ student, type: 'positive', reason });
+      setFeedback({ student, type: 'positive', reason, delta });
       audioService.playPointUp();
     } else if (delta < 0) {
-      setFeedback({ student, type: 'negative', reason });
+      setFeedback({ student, type: 'negative', reason, delta });
       audioService.playPointDown();
     }
   };
@@ -264,24 +265,30 @@ const App: React.FC = () => {
       pool = filteredStudents;
       setPickedIdsMap(prev => ({ ...prev, [selectedClassId]: [] }));
     }
+    
     setIsShuffling(true);
+    setShufflingWinner(null);
     let count = 0;
-    const maxShuffle = 18;
-    const winnerIndex = Math.floor(Math.random() * pool.length);
-    const winner = pool[winnerIndex];
+    const maxShuffle = 24;
+    const winnerIndexInPool = Math.floor(Math.random() * pool.length);
+    const winner = pool[winnerIndexInPool];
     
     const interval = setInterval(() => {
       if (count < maxShuffle) {
         const randomIndex = Math.floor(Math.random() * filteredStudents.length);
-        setShuffleDisplay(filteredStudents[randomIndex]);
+        setShuffleIndex(randomIndex);
         audioService.playShuffleTick(count, maxShuffle);
       } else {
-        setShuffleDisplay(winner);
+        const finalIdx = filteredStudents.findIndex(s => s.id === winner.id);
+        setShuffleIndex(finalIdx);
+        setShufflingWinner(winner);
         audioService.playShuffleSuccess();
         clearInterval(interval);
+        
         setTimeout(() => {
           setIsShuffling(false);
           setActingStudent(winner);
+          setShuffleIndex(-1);
           setPickedIdsMap(prev => {
             const currentHistory = prev[selectedClassId] || [];
             if (!currentHistory.includes(winner.id)) {
@@ -289,7 +296,7 @@ const App: React.FC = () => {
             }
             return prev;
           });
-        }, 500);
+        }, 1200);
       }
       count++;
     }, 80);
@@ -468,6 +475,7 @@ const App: React.FC = () => {
         )}
       </main>
 
+      {/* Bulk Action Bar */}
       {isMultiSelect && selectedIds.size > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-10">
           <button 
@@ -511,10 +519,11 @@ const App: React.FC = () => {
         </div>
       )}
 
-      {isShuffling && shuffleDisplay && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/95 backdrop-blur-md">
-          {/* Continuous Fireworks Background for Shuffling */}
-          <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+      {/* Random Pick Shuffle Overlay (Card Draw Style) */}
+      {isShuffling && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/98 backdrop-blur-xl">
+          {/* Continuous Fireworks Background */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center opacity-40">
             {shuffleParticles.map(p => (
               <div 
                 key={p.id} 
@@ -533,13 +542,53 @@ const App: React.FC = () => {
             ))}
           </div>
 
-          <div className="text-center p-8 rounded-3xl border-8 border-pokemon-yellow bg-black/40 backdrop-blur-sm relative z-[120] shadow-[0_0_100px_rgba(255,235,59,0.3)] animate-in zoom-in duration-300">
-            <h2 className="pokemon-font text-white text-3xl mb-12 animate-pulse tracking-tighter">WHO'S NEXT?...</h2>
-            <div className="relative">
-               <div className="absolute inset-0 bg-white/20 blur-[80px] rounded-full animate-pulse"></div>
-               <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shuffleDisplay.pokemonId}.png`} className="w-64 h-64 object-contain mx-auto relative z-10" />
+          <div className="w-full max-w-5xl h-full flex flex-col p-8 relative z-[120]">
+            <h2 className="pokemon-font text-white text-2xl md:text-3xl mb-8 text-center animate-pulse tracking-tighter">
+              {shufflingWinner ? 'WE HAVE A WINNER! / 抽中了！' : 'SHUFFLING THE DECK... / 正在洗牌...'}
+            </h2>
+            
+            {/* Grid of "Cards" during shuffle */}
+            <div className="flex-1 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 overflow-hidden">
+               {filteredStudents.map((s, idx) => {
+                 const isActive = shuffleIndex === idx;
+                 const isWinner = shufflingWinner?.id === s.id;
+                 return (
+                   <div 
+                    key={s.id}
+                    className={`aspect-[3/4] rounded-xl border-2 transition-all duration-75 flex items-center justify-center overflow-hidden ${
+                      isActive 
+                        ? 'bg-yellow-400 border-white scale-110 z-20 shadow-[0_0_20px_white]' 
+                        : isWinner && shufflingWinner 
+                          ? 'bg-pokemon-yellow border-white scale-125 z-30 shadow-[0_0_40px_rgba(255,255,255,0.8)]'
+                          : 'bg-white/5 border-white/10 opacity-40'
+                    }`}
+                   >
+                     {(isActive || isWinner) && (
+                       <img 
+                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${s.pokemonId}.png`} 
+                        className="w-full h-full object-contain p-1"
+                       />
+                     )}
+                   </div>
+                 );
+               })}
             </div>
-            <p className="pokemon-font text-yellow-400 text-2xl mt-8 drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">#{shuffleDisplay.rollNo} {shuffleDisplay.name}</p>
+
+            {/* Winner Spotlight Reveal */}
+            {shufflingWinner && (
+              <div className="absolute inset-0 z-[130] flex flex-col items-center justify-center bg-black/40 backdrop-blur-md animate-in zoom-in duration-500">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-pokemon-yellow blur-[100px] rounded-full animate-pulse opacity-50"></div>
+                  <div className="bg-white rounded-[3rem] p-8 border-8 border-pokemon-yellow shadow-[0_0_100px_rgba(255,235,59,0.5)] transform rotate-3 animate-in slide-in-from-bottom-20 duration-500">
+                    <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shufflingWinner.pokemonId}.png`} className="w-64 h-64 object-contain mx-auto relative z-10" />
+                    <div className="text-center mt-6">
+                      <p className="pokemon-font text-orange-900 text-3xl mb-2">#{shufflingWinner.rollNo}</p>
+                      <p className="pokemon-font text-orange-900 text-2xl tracking-tighter">{shufflingWinner.name}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -549,6 +598,7 @@ const App: React.FC = () => {
           student={feedback.student} 
           type={feedback.type} 
           reason={feedback.reason}
+          delta={feedback.delta}
           onComplete={() => setFeedback(null)} 
         />
       )}
