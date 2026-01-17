@@ -365,14 +365,14 @@ const App: React.FC = () => {
                   : yellowBtnStyle
               }`}
             >
-              {isMultiSelect ? '❌ CLOSE / 關閉多選' : '✅ MULTI-SELECT / 開啟多選'}
+              {isMultiSelect ? '❌ CLOSE / 關閉多選' : 'MULTI-SELECT / 開啟多選'}
             </button>
 
             <button 
               onClick={handleRandomPick}
               className={`${headerControlBase} ${yellowBtnStyle}`}
             >
-              🎯 RANDOM PICK ({pickedCount}/{filteredStudents.length})
+              RANDOM PICK ({pickedCount}/{filteredStudents.length})
             </button>
 
             <div className="flex items-center gap-2">
