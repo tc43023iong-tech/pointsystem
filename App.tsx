@@ -302,6 +302,11 @@ const App: React.FC = () => {
     }, 80);
   };
 
+  const handleResetPicked = () => {
+    // History is cleared immediately to start a new round (as requested: "重新來一次")
+    setPickedIdsMap(prev => ({ ...prev, [selectedClassId]: [] }));
+  };
+
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -368,12 +373,21 @@ const App: React.FC = () => {
               {isMultiSelect ? '❌ CLOSE / 關閉多選' : 'MULTI-SELECT / 開啟多選'}
             </button>
 
-            <button 
-              onClick={handleRandomPick}
-              className={`${headerControlBase} ${yellowBtnStyle}`}
-            >
-              RANDOM PICK ({pickedCount}/{filteredStudents.length})
-            </button>
+            <div className="flex items-center gap-1">
+              <button 
+                onClick={handleRandomPick}
+                className={`${headerControlBase} ${yellowBtnStyle}`}
+              >
+                RANDOM PICK ({pickedCount}/{filteredStudents.length})
+              </button>
+              <button 
+                onClick={handleResetPicked}
+                className="w-8 h-10 bg-yellow-500 text-orange-900 border-2 border-yellow-300 rounded-xl hover:bg-yellow-400 active:translate-y-0.5 transition-all shadow-md flex items-center justify-center text-sm"
+                title="Start New Round / 重新來一次"
+              >
+                🔄
+              </button>
+            </div>
 
             <div className="flex items-center gap-2">
               <select 
