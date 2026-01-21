@@ -59,7 +59,9 @@ const App: React.FC = () => {
       try {
         const parsed = JSON.parse(saved);
         setClasses(parsed);
-        setSelectedClassId(parsed[0]?.id || '');
+        if (parsed.length > 0) {
+          setSelectedClassId(parsed[0].id);
+        }
       } catch (e) {
         setClasses(INITIAL_CLASSES);
         setSelectedClassId(INITIAL_CLASSES[0].id);
@@ -303,7 +305,6 @@ const App: React.FC = () => {
   };
 
   const handleResetPicked = () => {
-    // History is cleared immediately to start a new round (as requested: "重新來一次")
     setPickedIdsMap(prev => ({ ...prev, [selectedClassId]: [] }));
   };
 
@@ -350,7 +351,6 @@ const App: React.FC = () => {
           </div>
           
           <div className="flex flex-wrap items-center gap-2">
-            {/* 🔔 Rules Button */}
             <button 
               onClick={() => setShowRules(true)}
               className="w-10 h-10 bg-yellow-400 text-orange-900 rounded-xl border-2 border-yellow-300 hover:bg-yellow-300 flex items-center justify-center shadow-md active:translate-y-0.5 transition-all text-lg"
@@ -504,39 +504,38 @@ const App: React.FC = () => {
       {/* Rules Modal */}
       {showRules && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in duration-200">
+          <div className="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in duration-200">
             <div className="bg-yellow-400 p-6 flex justify-between items-center">
               <h2 className="text-xl font-black text-orange-900 uppercase">Scoring Rules / 加分細則</h2>
-              <button onClick={() => setShowRules(false)} className="text-orange-900 text-3xl font-black">&times;</button>
+              <button onClick={() => setShowRules(false)} className="text-orange-900 text-3xl font-black hover:scale-110 transition-transform">&times;</button>
             </div>
             <div className="p-8">
-              <h3 className="text-lg font-black text-orange-800 mb-6 border-b-4 border-yellow-200 pb-2">默書/測驗 加分</h3>
-              <div className="space-y-4">
-                {[
-                  { range: "100或以上", points: "+25" },
-                  { range: "90～99", points: "+20" },
-                  { range: "80～89", points: "+15" },
-                  { range: "70～79", points: "+10" },
-                  { range: "60～69", points: "+5" },
-                ].map((rule, idx) => (
-                  <div key={idx} className="flex justify-between items-center bg-yellow-50 p-4 rounded-2xl border-2 border-yellow-100">
-                    <span className="font-bold text-gray-700 text-lg">{rule.range}</span>
-                    <span className="font-black text-orange-600 text-2xl">{rule.points}</span>
-                  </div>
-                ))}
-              </div>
+                <h3 className="text-lg font-black text-orange-800 mb-6 border-b-4 border-yellow-200 pb-2">默書/測驗 加分</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { range: "100或以上", points: "+25" },
+                    { range: "90～99", points: "+20" },
+                    { range: "80～89", points: "+15" },
+                    { range: "70～79", points: "+10" },
+                    { range: "60～69", points: "+5" },
+                  ].map((rule, idx) => (
+                    <div key={idx} className="flex justify-between items-center bg-yellow-50 p-4 rounded-2xl border-2 border-yellow-100">
+                      <span className="font-bold text-gray-700 text-lg">{rule.range}</span>
+                      <span className="font-black text-orange-600 text-2xl">{rule.points}</span>
+                    </div>
+                  ))}
+                </div>
             </div>
             <div className="bg-gray-100 p-4 text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-              Classroom Excellence Program
+              Classroom Excellence Program • Classroom Management System
             </div>
           </div>
         </div>
       )}
 
-      {/* Random Pick Shuffle Overlay (Card Draw Style) */}
+      {/* Random Pick Shuffle Overlay */}
       {isShuffling && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/98 backdrop-blur-xl">
-          {/* Continuous Fireworks Background */}
           <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center opacity-40">
             {shuffleParticles.map(p => (
               <div 
@@ -561,7 +560,6 @@ const App: React.FC = () => {
               {shufflingWinner ? 'WE HAVE A WINNER! / 抽中了！' : 'SHUFFLING THE DECK... / 正在洗牌...'}
             </h2>
             
-            {/* Grid of "Cards" during shuffle */}
             <div className="flex-1 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 overflow-hidden">
                {filteredStudents.map((s, idx) => {
                  const isActive = shuffleIndex === idx;
@@ -588,7 +586,6 @@ const App: React.FC = () => {
                })}
             </div>
 
-            {/* Winner Spotlight Reveal */}
             {shufflingWinner && (
               <div className="absolute inset-0 z-[130] flex flex-col items-center justify-center bg-black/40 backdrop-blur-md animate-in zoom-in duration-500">
                 <div className="relative group">
