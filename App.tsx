@@ -417,6 +417,24 @@ const App: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-4">
+          {/* Mode Toggles */}
+          <div className="flex items-center gap-1.5 mr-2">
+            <button 
+              onClick={() => {
+                setIsMultiSelect(!isMultiSelect);
+                if (isMultiSelect) setSelectedIds(new Set());
+              }}
+              className={`h-8 px-4 rounded-full font-bold text-[11px] shadow-sm transition-all flex items-center gap-1.5 ${
+                isMultiSelect 
+                  ? 'bg-pink-500 text-white ring-2 ring-pink-200 scale-105' 
+                  : 'bg-white border-2 border-gray-200 text-gray-500 hover:border-pink-300'
+              }`}
+            >
+              <span className="text-sm">{isMultiSelect ? '☑️' : '🔘'}</span>
+              多選模式
+            </button>
+          </div>
+
           <div className="flex items-center gap-1.5">
             <button 
               onClick={selectAllFiltered}
@@ -483,10 +501,8 @@ const App: React.FC = () => {
                 if (isMultiSelect) {
                   toggleSelection(student.id);
                 } else {
-                  // If not in multi-select mode, we can auto-enter it on first click or just show action
-                  // For this specific layout, let's toggle multi-select
-                  setIsMultiSelect(true);
-                  toggleSelection(student.id);
+                  // Direct Action Mode (Click outside avatar -> scoring interface)
+                  setActingStudent(student);
                 }
               }}
               onPokemonClick={(e) => {

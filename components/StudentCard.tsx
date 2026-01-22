@@ -27,7 +27,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
 
   return (
     <div 
-      className={`relative bg-white rounded-[2rem] shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col items-center p-5 border-4 overflow-hidden ${
+      className={`relative bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col p-6 border-4 overflow-hidden ${
         isSelected 
           ? 'border-[#F06292] ring-4 ring-pink-50 scale-[1.02] z-10' 
           : 'border-transparent hover:border-pink-100'
@@ -39,36 +39,43 @@ export const StudentCard: React.FC<StudentCardProps> = ({
         <div className="absolute inset-0 bg-pink-500/5 z-20 pointer-events-none"></div>
       )}
 
-      {/* Top Left Area: Roll No & Rank */}
-      <div className="absolute top-4 left-4 flex flex-col gap-1 items-start z-30">
-        <div className="bg-gray-100 text-gray-500 text-[10px] px-2.5 py-1 rounded-full font-bold">
-          #{student.rollNo}
-        </div>
-        {rank !== undefined && (
-          <div className="bg-[#FFD54F] text-[#855C00] text-[10px] px-2.5 py-1 rounded-full font-black shadow-sm border border-yellow-200 animate-in slide-in-from-left-2">
-            RANK {rank}
+      {/* Header Section: Info & Score */}
+      <div className="flex justify-between items-start w-full mb-2 z-30">
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <span className="text-[#F06292] font-black text-lg">
+              #{student.rollNo}
+            </span>
+            {rank !== undefined && (
+              <span className="bg-[#FFD54F] text-[#855C00] text-[9px] px-2 py-0.5 rounded-full font-black shadow-sm">
+                RANK {rank}
+              </span>
+            )}
           </div>
-        )}
-      </div>
+          <h3 className="text-2xl font-black text-slate-800 tracking-tight mt-0.5">
+            {student.name}
+          </h3>
+        </div>
 
-      {/* Top Right Area: Score Badge (Based on User Image) */}
-      <div className="absolute top-4 right-4 z-30 flex flex-col items-center justify-center min-w-[54px] min-h-[54px] bg-[#FFF9E1] border-2 border-[#FFE082] rounded-[1.2rem] shadow-md animate-in zoom-in duration-300">
-         <span className="text-[#B48A00] text-sm leading-none mt-1">★</span>
-         <span className="text-[#855C00] text-2xl font-bold leading-tight -mt-0.5 px-2">
-           {totalVal}
-         </span>
+        {/* Score Badge (Right Side) */}
+        <div className="flex flex-col items-center justify-center min-w-[58px] min-h-[58px] bg-[#FFF9E1] border-2 border-[#FFE082] rounded-2xl shadow-sm animate-in zoom-in duration-300">
+           <span className="text-[#B48A00] text-xs leading-none mt-1">★</span>
+           <span className="text-[#855C00] text-2xl font-black leading-tight -mt-0.5 px-2">
+             {totalVal}
+           </span>
+        </div>
       </div>
       
-      {/* Avatar Section (Now Clear) */}
+      {/* Avatar Section (Centered & Lowered) */}
       <div 
-        className="relative w-32 h-32 mt-6 mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+        className="relative w-full aspect-square max-w-[140px] mx-auto mb-4 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 ease-out"
         onClick={onPokemonClick}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50 to-gray-100/50 rounded-full"></div>
+        <div className="absolute inset-2 bg-gradient-to-b from-gray-50 to-gray-100/30 rounded-full"></div>
         <img 
           src={pokemonImg} 
           alt="Pokemon" 
-          className="w-28 h-28 object-contain z-10 drop-shadow-xl relative"
+          className="w-full h-full object-contain z-10 drop-shadow-2xl relative"
         />
 
         {!isMultiSelectMode && (
@@ -78,20 +85,15 @@ export const StudentCard: React.FC<StudentCardProps> = ({
         )}
       </div>
 
-      <div className="text-center mb-4">
-        <h3 className="text-xl font-bold text-gray-800 tracking-tight">
-          {student.name}
-        </h3>
-      </div>
-      
-      <div className="w-full grid grid-cols-2 gap-2 mt-auto">
-        <div className="bg-green-50/50 border border-green-100/50 rounded-2xl p-2 flex flex-col items-center justify-center">
-          <span className="text-[9px] font-bold text-green-400 uppercase tracking-tighter mb-0.5">Pos / 加分</span>
-          <span className="text-sm font-black text-green-600">+{posVal}</span>
+      {/* Bottom Points Summary */}
+      <div className="w-full grid grid-cols-2 gap-3 mt-auto">
+        <div className="bg-green-50/70 border border-green-100 rounded-2xl py-2 px-3 flex flex-col items-center justify-center shadow-sm">
+          <span className="text-[10px] font-bold text-green-500 uppercase tracking-tighter mb-0.5">POS / 加分</span>
+          <span className="text-lg font-black text-green-600">+{posVal}</span>
         </div>
-        <div className="bg-red-50/50 border border-red-100/50 rounded-2xl p-2 flex flex-col items-center justify-center">
-          <span className="text-[9px] font-bold text-red-400 uppercase tracking-tighter mb-0.5">Neg / 減分</span>
-          <span className="text-sm font-black text-red-600">-{negVal}</span>
+        <div className="bg-red-50/70 border border-red-100 rounded-2xl py-2 px-3 flex flex-col items-center justify-center shadow-sm">
+          <span className="text-[10px] font-bold text-red-500 uppercase tracking-tighter mb-0.5">NEG / 減分</span>
+          <span className="text-lg font-black text-red-600">-{negVal}</span>
         </div>
       </div>
     </div>
