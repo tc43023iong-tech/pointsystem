@@ -253,10 +253,12 @@ const App: React.FC = () => {
     const next = new Set<string>();
     filteredStudents.forEach(s => next.add(s.id));
     setSelectedIds(next);
+    setIsMultiSelect(true);
   };
 
   const deselectAll = () => {
     setSelectedIds(new Set());
+    setIsMultiSelect(false);
   };
 
   const handleRandomPick = () => {
@@ -337,128 +339,139 @@ const App: React.FC = () => {
 
   const pickedCount = (pickedIdsMap[selectedClassId] || []).filter(id => filteredStudents.some(fs => fs.id === id)).length;
 
-  const headerControlBase = "h-10 px-4 rounded-xl font-black text-[10px] md:text-[11px] uppercase tracking-tight flex items-center justify-center gap-2 transition-all shadow-md border-2 whitespace-nowrap";
-  const yellowBtnStyle = "bg-yellow-400 text-orange-900 border-yellow-300 hover:bg-yellow-300 active:translate-y-0.5";
-  const orangeBtnStyle = "bg-orange-500 text-white border-orange-400 hover:bg-orange-400 active:translate-y-0.5 shadow-orange-900/10";
-  const selectBase = "h-10 px-3 bg-white/10 border-white/20 rounded-xl text-xs font-bold text-white focus:outline-none cursor-pointer hover:bg-white/20 transition-colors shadow-sm outline-none";
-
+  const btnPillBase = "h-8 px-4 rounded-full font-bold text-[11px] flex items-center justify-center gap-1.5 transition-all shadow-sm active:translate-y-0.5";
+  const sortActive = "bg-pink-500 text-white";
+  const sortInactive = "bg-pink-50 text-pink-400";
+  
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-pokemon-red text-white p-3 shadow-xl sticky top-0 z-40 border-b-4 border-black/10">
-        <div className="max-w-[1600px] mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-black uppercase tracking-tighter pokemon-font truncate max-w-[300px] lg:max-w-none">Miss Iong's Class</h1>
-          </div>
-          
-          <div className="flex flex-wrap items-center gap-2">
-            <button 
-              onClick={() => setShowRules(true)}
-              className="w-10 h-10 bg-yellow-400 text-orange-900 rounded-xl border-2 border-yellow-300 hover:bg-yellow-300 flex items-center justify-center shadow-md active:translate-y-0.5 transition-all text-lg"
-              title="Scoring Rules / 加分細則"
+    <div className="min-h-screen bg-[#FDF2F5] p-6 flex flex-col gap-6">
+      {/* Top Header Card */}
+      <header className="bg-white rounded-[2.5rem] p-6 shadow-sm border border-pink-100/50 max-w-[1600px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-6 transition-all">
+        <div className="flex flex-col items-start gap-1">
+          <h1 className="text-4xl font-bold text-[#D81B60] tracking-tight">Miss Iong's Class</h1>
+          <p className="text-pink-400 font-bold flex items-center gap-2 text-sm">
+            ⭐ Point Management System / 學生積分系統 ⭐
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Class Selector Button */}
+          <div className="relative group">
+            <select 
+              className="appearance-none bg-[#FFD600] text-white px-8 py-4 rounded-[2rem] font-bold text-lg min-w-[280px] cursor-pointer outline-none shadow-md group-hover:bg-[#FFC400] transition-colors pr-12"
+              value={selectedClassId}
+              onChange={(e) => setSelectedClassId(e.target.value)}
             >
-              🔔
-            </button>
-
-            <button 
-              onClick={() => {
-                setIsMultiSelect(!isMultiSelect);
-                setSelectedIds(new Set());
-              }}
-              className={`${headerControlBase} ${
-                isMultiSelect 
-                  ? 'bg-yellow-500 text-orange-900 border-yellow-600 ring-2 ring-yellow-200 shadow-inner' 
-                  : yellowBtnStyle
-              }`}
-            >
-              {isMultiSelect ? '❌ CLOSE / 關閉多選' : 'MULTI-SELECT / 開啟多選'}
-            </button>
-
-            <div className="flex items-center gap-1">
-              <button 
-                onClick={handleRandomPick}
-                className={`${headerControlBase} ${yellowBtnStyle}`}
-              >
-                RANDOM PICK ({pickedCount}/{filteredStudents.length})
-              </button>
-              <button 
-                onClick={handleResetPicked}
-                className="w-8 h-10 bg-yellow-500 text-orange-900 border-2 border-yellow-300 rounded-xl hover:bg-yellow-400 active:translate-y-0.5 transition-all shadow-md flex items-center justify-center text-sm"
-                title="Start New Round / 重新來一次"
-              >
-                🔄
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <select 
-                className={selectBase}
-                value={selectedClassId}
-                onChange={(e) => setSelectedClassId(e.target.value)}
-              >
-                {classes.map(c => (
-                  <option key={c.id} value={c.id} className="text-black font-sans">{c.className}</option>
-                ))}
-              </select>
-              
-              <select 
-                className={selectBase}
-                value={sortType}
-                onChange={(e) => setSortType(e.target.value as SortType)}
-              >
-                <option value={SortType.ID_ASC} className="text-black font-sans">Roll No / 學號排列</option>
-                <option value={SortType.SCORE_DESC} className="text-black font-sans">Score (High-Low) / 分數由高到低</option>
-                <option value={SortType.SCORE_ASC} className="text-black font-sans">Score (Low-High) / 分數由低到高</option>
-                <option value={SortType.NAME_ASC} className="text-black font-sans">Name / 姓名排列</option>
-              </select>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => {
-                  const data = JSON.stringify(classes, null, 2);
-                  const blob = new Blob([data], { type: 'text/plain' });
-                  const url = URL.createObjectURL(blob);
-                  const link = document.createElement('a');
-                  link.href = url;
-                  link.download = `Miss_Iongs_All_Classes_Data_${new Date().toISOString().split('T')[0]}.txt`;
-                  link.click();
-                }} 
-                className={`${headerControlBase} ${orangeBtnStyle}`}
-              >
-                EXPORT / 導出
-              </button>
-              
-              <label className={`${headerControlBase} ${orangeBtnStyle} cursor-pointer`}>
-                IMPORT / 導入
-                <input type="file" className="hidden" accept=".txt" onChange={handleImport} />
-              </label>
+              {classes.map(c => (
+                <option key={c.id} value={c.id} className="text-black font-sans">{c.className}</option>
+              ))}
+            </select>
+            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-white font-black">
+              ▼
             </div>
           </div>
+
+          <button 
+            onClick={() => {
+              const data = JSON.stringify(classes, null, 2);
+              const blob = new Blob([data], { type: 'text/plain' });
+              const url = URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `Miss_Iongs_Data_${new Date().toISOString().split('T')[0]}.txt`;
+              link.click();
+            }}
+            className="bg-[#64B5F6] hover:bg-[#42A5F5] text-white px-8 py-4 rounded-[2rem] font-bold text-lg flex items-center gap-3 shadow-md transition-all active:scale-95"
+          >
+            📥 EXPORT / 導出
+          </button>
+
+          <label className="bg-[#4DB6AC] hover:bg-[#26A69A] text-white px-8 py-4 rounded-[2rem] font-bold text-lg flex items-center gap-3 shadow-md cursor-pointer transition-all active:scale-95">
+            📤 IMPORT / 導入
+            <input type="file" className="hidden" accept=".txt" onChange={handleImport} />
+          </label>
         </div>
       </header>
 
-      <main className="flex-1 max-w-[1600px] mx-auto w-full p-4">
-        {isMultiSelect && (
-          <div className="mb-6 flex flex-wrap items-center gap-3 animate-in slide-in-from-top-4 duration-300">
+      {/* Control Bar Card */}
+      <div className="bg-white rounded-[2rem] p-3 shadow-sm border border-pink-100/50 max-w-[1600px] mx-auto w-full flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setSortType(SortType.ID_ASC)}
+            className={`${btnPillBase} ${sortType === SortType.ID_ASC ? sortActive : sortInactive}`}
+          >
+            # ID / 學號
+          </button>
+          <button 
+            onClick={() => setSortType(SortType.SCORE_DESC)}
+            className={`${btnPillBase} ${sortType === SortType.SCORE_DESC ? sortActive : sortInactive}`}
+          >
+            HI-LO / 高到低
+          </button>
+          <button 
+            onClick={() => setSortType(SortType.SCORE_ASC)}
+            className={`${btnPillBase} ${sortType === SortType.SCORE_ASC ? sortActive : sortInactive}`}
+          >
+            LO-HI / 低到高
+          </button>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1.5">
             <button 
               onClick={selectAllFiltered}
-              className="px-6 py-2.5 bg-yellow-400 text-orange-900 border-2 border-yellow-500 rounded-xl font-bold text-xs uppercase hover:bg-yellow-300 transition-colors shadow-sm"
+              className="h-8 px-4 rounded-full bg-[#B39DDB] text-white font-bold text-[11px] shadow-sm hover:bg-[#9575CD] transition-colors"
             >
-              SELECT ALL / 全選
+              全選
             </button>
             <button 
               onClick={deselectAll}
-              className="px-6 py-2.5 bg-yellow-100 text-orange-800 border-2 border-yellow-200 rounded-xl font-bold text-xs uppercase hover:bg-yellow-200 transition-colors shadow-sm"
+              className="h-8 px-4 rounded-full bg-[#E1E2E6] text-gray-500 font-bold text-[11px] shadow-sm hover:bg-gray-300 transition-colors"
             >
-              NONE / 取消
+              取消
             </button>
-            <div className="px-4 py-2 text-orange-900 font-bold text-xs bg-yellow-50 rounded-lg border border-yellow-300 shadow-inner">
-              {selectedIds.size} Selected / 已選擇
-            </div>
           </div>
-        )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 pb-24">
+          <div className="flex items-center">
+            <button 
+              onClick={handleRandomPick}
+              className="h-8 pl-4 pr-3 rounded-l-full bg-[#FF8A80] text-white font-bold text-[11px] flex items-center gap-2 shadow-sm hover:bg-[#FF5252] transition-colors"
+            >
+              隨機 ({pickedCount}/{filteredStudents.length})
+            </button>
+            <button 
+              onClick={handleResetPicked}
+              className="h-8 px-3 rounded-r-full bg-[#CFD8DC] text-gray-600 hover:bg-gray-400 transition-colors shadow-sm"
+              title="Reset picked list"
+            >
+              🔄
+            </button>
+          </div>
+
+          <button 
+            onClick={() => {
+              if (selectedIds.size > 0) setBulkActing(true);
+            }}
+            className={`h-9 px-6 rounded-full font-bold text-sm text-white transition-all shadow-md flex items-center gap-2 ${
+              selectedIds.size > 0 
+                ? 'bg-[#F06292] hover:bg-[#E91E63] scale-105' 
+                : 'bg-gray-300 cursor-not-allowed'
+            }`}
+          >
+            獎懲評分 ({selectedIds.size})
+          </button>
+
+          <button 
+            onClick={() => setShowRules(true)}
+            className="w-9 h-9 bg-[#FFD54F] hover:bg-[#FFC107] text-orange-900 rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 text-lg"
+          >
+            🔔
+          </button>
+        </div>
+      </div>
+
+      <main className="max-w-[1600px] mx-auto w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 pb-24">
           {filteredStudents.map((student, index) => (
             <StudentCard 
               key={student.id} 
@@ -470,70 +483,29 @@ const App: React.FC = () => {
                 if (isMultiSelect) {
                   toggleSelection(student.id);
                 } else {
-                  setActingStudent(student);
+                  // If not in multi-select mode, we can auto-enter it on first click or just show action
+                  // For this specific layout, let's toggle multi-select
+                  setIsMultiSelect(true);
+                  toggleSelection(student.id);
                 }
               }}
               onPokemonClick={(e) => {
                 e.stopPropagation();
-                if (!isMultiSelect) setPokeselStudent(student);
+                setPokeselStudent(student);
               }}
             />
           ))}
         </div>
 
         {filteredStudents.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-32 text-gray-400">
-            <div className="text-6xl mb-4 opacity-20">👻</div>
-            <p className="text-xl font-black uppercase tracking-widest opacity-50">No Students Found</p>
+          <div className="flex flex-col items-center justify-center py-32 text-gray-300">
+            <div className="text-8xl mb-4 opacity-10">🔍</div>
+            <p className="text-2xl font-black uppercase tracking-widest opacity-30">No Students Found</p>
           </div>
         )}
       </main>
 
-      {/* Bulk Action Bar */}
-      {isMultiSelect && selectedIds.size > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-10">
-          <button 
-            onClick={() => setBulkActing(true)}
-            className="px-10 py-5 bg-gradient-to-r from-yellow-400 to-yellow-500 text-orange-900 font-black rounded-full shadow-[0_10px_40px_rgba(245,158,11,0.5)] border-b-8 border-yellow-700 hover:scale-105 active:scale-95 transition-all text-lg flex items-center gap-3"
-          >
-            ⭐ APPLY TO {selectedIds.size} SELECTED / 批量評分
-          </button>
-        </div>
-      )}
-
-      {/* Rules Modal */}
-      {showRules && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in duration-200">
-            <div className="bg-yellow-400 p-6 flex justify-between items-center">
-              <h2 className="text-xl font-black text-orange-900 uppercase">Scoring Rules / 加分細則</h2>
-              <button onClick={() => setShowRules(false)} className="text-orange-900 text-3xl font-black hover:scale-110 transition-transform">&times;</button>
-            </div>
-            <div className="p-8">
-                <h3 className="text-lg font-black text-orange-800 mb-6 border-b-4 border-yellow-200 pb-2">默書/測驗 加分</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
-                    { range: "100或以上", points: "+25" },
-                    { range: "90～99", points: "+20" },
-                    { range: "80～89", points: "+15" },
-                    { range: "70～79", points: "+10" },
-                    { range: "60～69", points: "+5" },
-                  ].map((rule, idx) => (
-                    <div key={idx} className="flex justify-between items-center bg-yellow-50 p-4 rounded-2xl border-2 border-yellow-100">
-                      <span className="font-bold text-gray-700 text-lg">{rule.range}</span>
-                      <span className="font-black text-orange-600 text-2xl">{rule.points}</span>
-                    </div>
-                  ))}
-                </div>
-            </div>
-            <div className="bg-gray-100 p-4 text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-              Classroom Excellence Program • Classroom Management System
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Random Pick Shuffle Overlay */}
+      {/* Overlays and Modals */}
       {isShuffling && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/98 backdrop-blur-xl">
           <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center opacity-40">
@@ -554,48 +526,38 @@ const App: React.FC = () => {
               />
             ))}
           </div>
-
           <div className="w-full max-w-5xl h-full flex flex-col p-8 relative z-[120]">
             <h2 className="pokemon-font text-white text-2xl md:text-3xl mb-8 text-center animate-pulse tracking-tighter">
               {shufflingWinner ? 'WE HAVE A WINNER! / 抽中了！' : 'SHUFFLING THE DECK... / 正在洗牌...'}
             </h2>
-            
             <div className="flex-1 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 overflow-hidden">
-               {filteredStudents.map((s, idx) => {
-                 const isActive = shuffleIndex === idx;
-                 const isWinner = shufflingWinner?.id === s.id;
-                 return (
-                   <div 
+               {filteredStudents.map((s, idx) => (
+                 <div 
                     key={s.id}
                     className={`aspect-[3/4] rounded-xl border-2 transition-all duration-75 flex items-center justify-center overflow-hidden ${
-                      isActive 
+                      shuffleIndex === idx 
                         ? 'bg-yellow-400 border-white scale-110 z-20 shadow-[0_0_20px_white]' 
-                        : isWinner && shufflingWinner 
+                        : shufflingWinner?.id === s.id
                           ? 'bg-pokemon-yellow border-white scale-125 z-30 shadow-[0_0_40px_rgba(255,255,255,0.8)]'
                           : 'bg-white/5 border-white/10 opacity-40'
                     }`}
-                   >
-                     {(isActive || isWinner) && (
-                       <img 
-                        src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${s.pokemonId}.png`} 
-                        className="w-full h-full object-contain p-1"
-                       />
-                     )}
-                   </div>
-                 );
-               })}
+                 >
+                   {(shuffleIndex === idx || (shufflingWinner?.id === s.id)) && (
+                     <img 
+                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${s.pokemonId}.png`} 
+                      className="w-full h-full object-contain p-1"
+                     />
+                   )}
+                 </div>
+               ))}
             </div>
-
             {shufflingWinner && (
               <div className="absolute inset-0 z-[130] flex flex-col items-center justify-center bg-black/40 backdrop-blur-md animate-in zoom-in duration-500">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-pokemon-yellow blur-[100px] rounded-full animate-pulse opacity-50"></div>
-                  <div className="bg-white rounded-[3rem] p-8 border-8 border-pokemon-yellow shadow-[0_0_100px_rgba(255,235,59,0.5)] transform rotate-3 animate-in slide-in-from-bottom-20 duration-500">
-                    <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shufflingWinner.pokemonId}.png`} className="w-64 h-64 object-contain mx-auto relative z-10" />
-                    <div className="text-center mt-6">
-                      <p className="pokemon-font text-orange-900 text-3xl mb-2">#{shufflingWinner.rollNo}</p>
-                      <p className="pokemon-font text-orange-900 text-2xl tracking-tighter">{shufflingWinner.name}</p>
-                    </div>
+                <div className="bg-white rounded-[3rem] p-8 border-8 border-pokemon-yellow transform rotate-3 shadow-2xl">
+                  <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shufflingWinner.pokemonId}.png`} className="w-64 h-64 mx-auto" />
+                  <div className="text-center mt-6">
+                    <p className="pokemon-font text-orange-900 text-3xl mb-2">#{shufflingWinner.rollNo}</p>
+                    <p className="pokemon-font text-orange-900 text-2xl tracking-tighter">{shufflingWinner.name}</p>
                   </div>
                 </div>
               </div>
@@ -614,7 +576,7 @@ const App: React.FC = () => {
         />
       )}
 
-      {(actingStudent || bulkActing) && !isShuffling && (
+      {(actingStudent || bulkActing) && (
         <ActionModal 
           student={actingStudent || { name: `${selectedIds.size} 位同學`, rollNo: 0, pokemonId: 25 } as any} 
           onClose={() => { setActingStudent(null); setBulkActing(false); }} 
@@ -626,12 +588,41 @@ const App: React.FC = () => {
       {pokeselStudent && (
         <PokemonSelector 
           currentId={pokeselStudent.pokemonId}
+          student={pokeselStudent}
           onClose={() => setPokeselStudent(null)}
           onSelect={(newId) => {
             updateStudent({ ...pokeselStudent, pokemonId: newId });
             setPokeselStudent(null);
           }}
         />
+      )}
+
+      {showRules && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white w-full max-w-2xl rounded-[3rem] overflow-hidden shadow-2xl animate-in zoom-in">
+            <div className="bg-[#FFD54F] p-6 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-orange-900 uppercase">Scoring Rules / 加分細則</h2>
+              <button onClick={() => setShowRules(false)} className="text-orange-900 text-3xl">&times;</button>
+            </div>
+            <div className="p-8 space-y-4">
+              <h3 className="text-lg font-bold text-orange-800 border-b-2 border-orange-100 pb-2">默書/測驗 加分</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {[
+                  { range: "100或以上", points: "+25" },
+                  { range: "90～99", points: "+20" },
+                  { range: "80～89", points: "+15" },
+                  { range: "70～79", points: "+10" },
+                  { range: "60～69", points: "+5" },
+                ].map((rule, idx) => (
+                  <div key={idx} className="flex justify-between items-center bg-orange-50 p-4 rounded-2xl border border-orange-100">
+                    <span className="font-bold text-gray-700">{rule.range}</span>
+                    <span className="font-black text-orange-600 text-xl">{rule.points}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
