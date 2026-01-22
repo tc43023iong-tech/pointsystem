@@ -63,7 +63,7 @@ export const INITIAL_CLASSES = [
   {
     id: '4b-pt',
     className: '四乙 普通話 (4B Mandarin)',
-    students: parseClassList('4b-pt', `1 陳沁儀\n2 陳信豪\n3 周詩蕎\n4 鄭瑩瑩\n5 鄭泓昊\n6 蔣沁妍\n7 甘子賢\n8 關子謙\n9 謝欣晏\n10 黃楚堯\n11 黃翰皓\n12 容毓俊\n13 特可欣\n14 陸皆橋\n15 馬超芸\n16 麥嘉俐\n17 牟智杰\n18 潘思涵\n19 蕭珈睿\n20 黃一進\n21 王美琳\n22 趙梓琳\n23 趙慕辰`)
+    students: parseClassList('4b-pt', `1 陳沁儀\n2 陳信豪\n3 周詩蕎\n4 鄭瑩瑩\n5 鄭泓昊\n6 蔣沁妍\n7 甘子賢\n8 關子謙\n9 謝欣晏\n10 黃楚堯\n11 黃翰皓\n12 容毓俊\n13 李可欣\n14 陸皆橋\n15 馬超芸\n16 麥嘉俐\n17 牟智杰\n18 潘思涵\n19 蕭珈睿\n20 黃一進\n21 王美琳\n22 趙梓琳\n23 趙慕辰`)
   },
   {
     id: '4b-en',
