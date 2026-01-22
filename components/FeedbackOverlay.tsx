@@ -16,45 +16,36 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
   
   const particles = useMemo(() => {
     if (!isPos) return [];
-    
-    const count = 120;
-    const layers = 4;
-    
+    const count = 80;
     return Array.from({ length: count }).map((_, i) => {
-      const layer = i % layers;
       const angle = Math.random() * Math.PI * 2;
-      
-      const baseDistance = layer === 0 ? 100 : layer === 1 ? 200 : layer === 2 ? 300 : 400;
-      const distance = baseDistance + Math.random() * 80;
-      
-      const colors = [
-        '#FF3F3F', '#FFD700', '#00E5FF', '#FF00FF', '#7CFF01', '#FFFFFF', '#FFA500'
-      ];
-
+      const distance = 100 + Math.random() * 300;
+      const colors = ['#F06292', '#FFD54F', '#4FC3F7', '#81C784', '#BA68C8'];
       return {
         id: i,
         dx: `${Math.cos(angle) * distance}px`,
         dy: `${Math.sin(angle) * distance}px`,
         color: colors[Math.floor(Math.random() * colors.length)],
-        delay: `${(layer * 0.1) + (Math.random() * 0.05)}s`,
-        duration: `${0.6 + Math.random() * 0.4}s`,
-        size: layer === 0 ? '12px' : '8px'
+        delay: `${Math.random() * 0.2}s`,
+        duration: `${0.8 + Math.random() * 0.6}s`,
+        size: `${Math.random() * 8 + 4}px`
       };
     });
   }, [isPos]);
 
   useEffect(() => {
-    const timer = setTimeout(onComplete, 2200); // Slightly longer to read all the info
+    const timer = setTimeout(onComplete, 2200);
     return () => clearTimeout(timer);
   }, [onComplete]);
 
   const pokemonImg = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${student.pokemonId}.png`;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/90 backdrop-blur-2xl animate-in fade-in duration-300">
-      <div className={`relative w-full max-w-md rounded-[3rem] p-6 md:p-8 shadow-2xl border-4 md:border-8 border-white overflow-visible transition-all transform animate-in zoom-in slide-in-from-bottom-8 duration-500 ${isPos ? 'bg-yellow-400' : 'bg-red-400'}`}>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-300">
+      {/* Pink Bordered Card - Matches "Searching..." UI style */}
+      <div className="bg-white w-full max-w-sm rounded-[3.5rem] p-8 border-[10px] border-[#F06292] shadow-2xl relative animate-in zoom-in duration-500 flex flex-col items-center">
         
-        {/* Firework Particles Container */}
+        {/* Firework Particles for Success */}
         {isPos && (
           <div className="absolute inset-0 pointer-events-none overflow-visible flex items-center justify-center">
             {particles.map(p => (
@@ -76,55 +67,55 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
           </div>
         )}
 
-        <div className="relative z-10 flex flex-col items-center text-center">
-          {/* Header Title */}
-          <div className="text-white mb-4">
-            <h2 className="pokemon-font text-xl md:text-2xl mb-1 drop-shadow-lg tracking-tight">
-              {isPos ? (isGroup ? 'AWESOME TEAM!' : 'CONGRATULATIONS!') : 'KEEP WORKING HARD!'}
-            </h2>
-            <h3 className="pokemon-font text-base md:text-lg drop-shadow-lg opacity-95">
-              {isPos ? (isGroup ? '團隊真棒！' : '恭喜你！') : '繼續努力！'}
-            </h3>
-          </div>
+        {/* Top Label */}
+        <div className="flex items-center gap-2 mb-6">
+           <span className="text-2xl">{isPos ? '✨' : '⚠️'}</span>
+           <span className={`font-black text-xl tracking-tight uppercase ${isPos ? 'text-[#F06292]' : 'text-slate-400'}`}>
+             {isPos ? 'CONGRATULATIONS!' : 'KEEP TRYING!'}
+           </span>
+        </div>
 
-          {/* Student Info */}
-          <div className="w-full space-y-2 mb-4">
-             <div className="bg-white/30 backdrop-blur-md rounded-[1.5rem] py-3 px-6 border-2 border-white/50 shadow-inner">
-                <p className="text-white text-2xl md:text-3xl font-black drop-shadow-md">
-                   {isGroup ? student.name : `#${student.rollNo} ${student.name}`}
-                </p>
+        {/* Pokemon Image Box */}
+        <div className={`w-full aspect-square rounded-[3rem] flex items-center justify-center mb-6 relative overflow-hidden ${isPos ? 'bg-[#FDF2F5]' : 'bg-[#F8F9FA]'}`}>
+           <img 
+              src={pokemonImg} 
+              className={`w-40 h-40 object-contain drop-shadow-2xl z-10 ${isPos ? 'animate-bounce' : 'animate-shake'}`}
+              alt="Pokemon"
+           />
+           <div className={`absolute inset-0 opacity-20 blur-2xl ${isPos ? 'bg-pink-300' : 'bg-gray-300'}`}></div>
+        </div>
+
+        {/* Student Info */}
+        <div className="text-center w-full space-y-1 mb-6">
+          <h3 className="text-[#D81B60] text-3xl font-black tracking-tight leading-tight">
+             {isGroup ? student.name : `#${student.rollNo} ${student.name}`}
+          </h3>
+          
+          <div className="flex items-center justify-center gap-3 mt-4">
+             <div className={`px-4 py-1.5 rounded-2xl font-black text-2xl shadow-sm border-2 border-white ${isPos ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                {delta > 0 ? `+${delta}` : delta}
              </div>
-             
-             {/* Delta + Reason Display */}
              {reason && (
-               <div className="flex items-center gap-2 justify-center">
-                 <div className={`px-4 py-2 rounded-xl font-black text-xl shadow-md border-2 border-white/50 ${isPos ? 'bg-yellow-500 text-white' : 'bg-red-600 text-white'}`}>
-                    {delta > 0 ? `+${delta}` : delta}
-                 </div>
-                 <div className="bg-black/20 backdrop-blur-sm px-6 py-2 rounded-xl border border-white/20 flex-1">
-                   <span className="text-white text-base md:text-lg font-bold uppercase tracking-wide">
-                      {reason}
-                   </span>
-                 </div>
+               <div className="bg-slate-50 px-4 py-1.5 rounded-2xl border border-slate-100">
+                 <span className="text-slate-500 text-sm font-black uppercase tracking-wider">
+                    {reason}
+                 </span>
                </div>
              )}
           </div>
+        </div>
 
-          {/* Pokemon Visual */}
-          <div className={`relative mb-4 ${!isPos ? 'animate-shake' : 'animate-bounce'}`}>
-            <div className={`absolute inset-0 blur-[40px] rounded-full scale-125 ${isPos ? 'bg-white/50' : 'bg-white/20'}`}></div>
-            <img src={pokemonImg} className="w-40 h-40 md:w-52 h-52 relative z-10 drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] object-contain" alt="Status Visual" />
+        {/* Score Update Panel */}
+        <div className="w-full bg-[#FDF2F5] rounded-[2rem] p-4 border-2 border-white shadow-inner text-center">
+          <p className="text-[9px] font-black text-pink-300 uppercase tracking-[0.3em] mb-1">CURRENT TOTAL / 目前分數</p>
+          <div className="text-5xl font-black text-[#D81B60] tracking-tighter">
+            {student.points}
           </div>
+        </div>
 
-          {/* New Total Display */}
-          <div className="w-full">
-            <div className="bg-black/40 backdrop-blur-md rounded-[2.5rem] p-4 md:p-6 border-4 border-white/40 shadow-2xl shine-effect">
-              <div className="text-white text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] opacity-80 mb-1">New Total / 最新分數</div>
-              <div className={`text-5xl md:text-6xl font-black ${isPos ? 'text-yellow-200' : 'text-red-100'} drop-shadow-lg`}>
-                 {student.points}
-              </div>
-            </div>
-          </div>
+        {/* Small Footer Label */}
+        <div className="mt-6 text-[9px] font-black text-pink-200 uppercase tracking-[0.4em]">
+          Feedback System
         </div>
       </div>
     </div>

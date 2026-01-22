@@ -31,25 +31,6 @@ const App: React.FC = () => {
   const [shuffleIndex, setShuffleIndex] = useState<number>(-1);
   const [shufflingWinner, setShufflingWinner] = useState<Student | null>(null);
 
-  // Fireworks for shuffle
-  const shuffleParticles = useMemo(() => {
-    const count = 120;
-    const colors = ['#FF3F3F', '#FFD700', '#00E5FF', '#FF00FF', '#7CFF01', '#FFFFFF', '#FFA500'];
-    return Array.from({ length: count }).map((_, i) => {
-      const angle = Math.random() * Math.PI * 2;
-      const distance = 100 + Math.random() * 500;
-      return {
-        id: i,
-        dx: `${Math.cos(angle) * distance}px`,
-        dy: `${Math.sin(angle) * distance}px`,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        delay: `${Math.random() * 2}s`,
-        duration: `${0.6 + Math.random() * 0.8}s`,
-        size: `${Math.random() * 10 + 4}px`
-      };
-    });
-  }, []);
-
   // Initialize data
   useEffect(() => {
     const saved = localStorage.getItem('miss_iong_class_data');
@@ -289,21 +270,17 @@ const App: React.FC = () => {
         audioService.playShuffleSuccess();
         clearInterval(interval);
         
-        setTimeout(() => {
-          setIsShuffling(false);
-          setActingStudent(winner);
-          setShuffleIndex(-1);
-          setPickedIdsMap(prev => {
-            const currentHistory = prev[selectedClassId] || [];
-            if (!currentHistory.includes(winner.id)) {
-              return { ...prev, [selectedClassId]: [...currentHistory, winner.id] };
-            }
-            return prev;
-          });
-        }, 1200);
+        // Mark as picked in history
+        setPickedIdsMap(prev => {
+          const currentHistory = prev[selectedClassId] || [];
+          if (!currentHistory.includes(winner.id)) {
+            return { ...prev, [selectedClassId]: [...currentHistory, winner.id] };
+          }
+          return prev;
+        });
       }
       count++;
-    }, 80);
+    }, 100);
   };
 
   const handleResetPicked = () => {
@@ -342,6 +319,9 @@ const App: React.FC = () => {
   const btnPillBase = "h-8 px-4 rounded-full font-bold text-[11px] flex items-center justify-center gap-1.5 transition-all shadow-sm active:translate-y-0.5";
   const sortActive = "bg-pink-500 text-white";
   const sortInactive = "bg-pink-50 text-pink-400";
+
+  // Current shuffling student display
+  const shufflingStudent = shuffleIndex >= 0 ? filteredStudents[shuffleIndex] : null;
   
   return (
     <div className="min-h-screen bg-[#FDF2F5] p-6 flex flex-col gap-6">
@@ -355,7 +335,6 @@ const App: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
-          {/* Class Selector Button */}
           <div className="relative group">
             <select 
               className="appearance-none bg-[#FFD600] text-white px-8 py-4 rounded-[2rem] font-bold text-lg min-w-[280px] cursor-pointer outline-none shadow-md group-hover:bg-[#FFC400] transition-colors pr-12"
@@ -396,95 +375,39 @@ const App: React.FC = () => {
       {/* Control Bar Card */}
       <div className="bg-white rounded-[2rem] p-3 shadow-sm border border-pink-100/50 max-w-[1600px] mx-auto w-full flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <button 
-            onClick={() => setSortType(SortType.ID_ASC)}
-            className={`${btnPillBase} ${sortType === SortType.ID_ASC ? sortActive : sortInactive}`}
-          >
-            # ID / 學號
-          </button>
-          <button 
-            onClick={() => setSortType(SortType.SCORE_DESC)}
-            className={`${btnPillBase} ${sortType === SortType.SCORE_DESC ? sortActive : sortInactive}`}
-          >
-            HI-LO / 高到低
-          </button>
-          <button 
-            onClick={() => setSortType(SortType.SCORE_ASC)}
-            className={`${btnPillBase} ${sortType === SortType.SCORE_ASC ? sortActive : sortInactive}`}
-          >
-            LO-HI / 低到高
-          </button>
+          <button onClick={() => setSortType(SortType.ID_ASC)} className={`${btnPillBase} ${sortType === SortType.ID_ASC ? sortActive : sortInactive}`}># ID / 學號</button>
+          <button onClick={() => setSortType(SortType.SCORE_DESC)} className={`${btnPillBase} ${sortType === SortType.SCORE_DESC ? sortActive : sortInactive}`}>HI-LO / 高到低</button>
+          <button onClick={() => setSortType(SortType.SCORE_ASC)} className={`${btnPillBase} ${sortType === SortType.SCORE_ASC ? sortActive : sortInactive}`}>LO-HI / 低到高</button>
         </div>
 
         <div className="flex items-center gap-4">
-          {/* Mode Toggles */}
-          <div className="flex items-center gap-1.5 mr-2">
-            <button 
-              onClick={() => {
-                setIsMultiSelect(!isMultiSelect);
-                if (isMultiSelect) setSelectedIds(new Set());
-              }}
-              className={`h-8 px-4 rounded-full font-bold text-[11px] shadow-sm transition-all flex items-center gap-1.5 ${
-                isMultiSelect 
-                  ? 'bg-pink-500 text-white ring-2 ring-pink-200 scale-105' 
-                  : 'bg-white border-2 border-gray-200 text-gray-500 hover:border-pink-300'
-              }`}
-            >
-              <span className="text-sm">{isMultiSelect ? '☑️' : '🔘'}</span>
-              多選模式
-            </button>
-          </div>
+          <button 
+            onClick={() => { setIsMultiSelect(!isMultiSelect); if (isMultiSelect) setSelectedIds(new Set()); }}
+            className={`h-8 px-4 rounded-full font-bold text-[11px] shadow-sm transition-all flex items-center gap-1.5 ${isMultiSelect ? 'bg-pink-500 text-white ring-2 ring-pink-200 scale-105' : 'bg-white border-2 border-gray-200 text-gray-500 hover:border-pink-300'}`}
+          >
+            <span className="text-sm">{isMultiSelect ? '☑️' : '🔘'}</span>多選模式
+          </button>
 
           <div className="flex items-center gap-1.5">
-            <button 
-              onClick={selectAllFiltered}
-              className="h-8 px-4 rounded-full bg-[#B39DDB] text-white font-bold text-[11px] shadow-sm hover:bg-[#9575CD] transition-colors"
-            >
-              全選
-            </button>
-            <button 
-              onClick={deselectAll}
-              className="h-8 px-4 rounded-full bg-[#E1E2E6] text-gray-500 font-bold text-[11px] shadow-sm hover:bg-gray-300 transition-colors"
-            >
-              取消
-            </button>
+            <button onClick={selectAllFiltered} className="h-8 px-4 rounded-full bg-[#B39DDB] text-white font-bold text-[11px] shadow-sm hover:bg-[#9575CD] transition-colors">全選</button>
+            <button onClick={deselectAll} className="h-8 px-4 rounded-full bg-[#E1E2E6] text-gray-500 font-bold text-[11px] shadow-sm hover:bg-gray-300 transition-colors">取消</button>
           </div>
 
           <div className="flex items-center">
-            <button 
-              onClick={handleRandomPick}
-              className="h-8 pl-4 pr-3 rounded-l-full bg-[#FF8A80] text-white font-bold text-[11px] flex items-center gap-2 shadow-sm hover:bg-[#FF5252] transition-colors"
-            >
+            <button onClick={handleRandomPick} className="h-8 pl-4 pr-3 rounded-l-full bg-[#FF8A80] text-white font-bold text-[11px] flex items-center gap-2 shadow-sm hover:bg-[#FF5252] transition-colors">
               隨機 ({pickedCount}/{filteredStudents.length})
             </button>
-            <button 
-              onClick={handleResetPicked}
-              className="h-8 px-3 rounded-r-full bg-[#CFD8DC] text-gray-600 hover:bg-gray-400 transition-colors shadow-sm"
-              title="Reset picked list"
-            >
-              🔄
-            </button>
+            <button onClick={handleResetPicked} className="h-8 px-3 rounded-r-full bg-[#CFD8DC] text-gray-600 hover:bg-gray-400 transition-colors shadow-sm" title="Reset picked list">🔄</button>
           </div>
 
           <button 
-            onClick={() => {
-              if (selectedIds.size > 0) setBulkActing(true);
-            }}
-            className={`h-9 px-6 rounded-full font-bold text-sm text-white transition-all shadow-md flex items-center gap-2 ${
-              selectedIds.size > 0 
-                ? 'bg-[#F06292] hover:bg-[#E91E63] scale-105' 
-                : 'bg-gray-300 cursor-not-allowed'
-            }`}
+            onClick={() => { if (selectedIds.size > 0) setBulkActing(true); }}
+            className={`h-9 px-6 rounded-full font-bold text-sm text-white transition-all shadow-md flex items-center gap-2 ${selectedIds.size > 0 ? 'bg-[#F06292] hover:bg-[#E91E63] scale-105' : 'bg-gray-300 cursor-not-allowed'}`}
           >
             獎懲評分 ({selectedIds.size})
           </button>
 
-          <button 
-            onClick={() => setShowRules(true)}
-            className="w-9 h-9 bg-[#FFD54F] hover:bg-[#FFC107] text-orange-900 rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 text-lg"
-          >
-            🔔
-          </button>
+          <button onClick={() => setShowRules(true)} className="w-9 h-9 bg-[#FFD54F] hover:bg-[#FFC107] text-orange-900 rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 text-lg">🔔</button>
         </div>
       </div>
 
@@ -498,86 +421,70 @@ const App: React.FC = () => {
               isMultiSelectMode={isMultiSelect}
               rank={sortType === SortType.SCORE_DESC ? index + 1 : undefined}
               onClick={() => {
-                if (isMultiSelect) {
-                  toggleSelection(student.id);
-                } else {
-                  // Direct Action Mode (Click outside avatar -> scoring interface)
-                  setActingStudent(student);
-                }
+                if (isMultiSelect) toggleSelection(student.id);
+                else setActingStudent(student);
               }}
-              onPokemonClick={(e) => {
-                e.stopPropagation();
-                setPokeselStudent(student);
-              }}
+              onPokemonClick={(e) => { e.stopPropagation(); setPokeselStudent(student); }}
             />
           ))}
         </div>
-
-        {filteredStudents.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-32 text-gray-300">
-            <div className="text-8xl mb-4 opacity-10">🔍</div>
-            <p className="text-2xl font-black uppercase tracking-widest opacity-30">No Students Found</p>
-          </div>
-        )}
       </main>
 
-      {/* Overlays and Modals */}
+      {/* NEW RANDOM PICK MODAL (Matching User Image Request) */}
       {isShuffling && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/98 backdrop-blur-xl">
-          <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center opacity-40">
-            {shuffleParticles.map(p => (
-              <div 
-                key={p.id} 
-                className="firework-particle firework-infinite" 
-                style={{ 
-                  '--dx': p.dx, 
-                  '--dy': p.dy, 
-                  '--duration': p.duration,
-                  color: p.color,
-                  backgroundColor: 'currentColor',
-                  animationDelay: p.delay,
-                  width: p.size,
-                  height: p.size
-                } as React.CSSProperties}
-              />
-            ))}
-          </div>
-          <div className="w-full max-w-5xl h-full flex flex-col p-8 relative z-[120]">
-            <h2 className="pokemon-font text-white text-2xl md:text-3xl mb-8 text-center animate-pulse tracking-tighter">
-              {shufflingWinner ? 'WE HAVE A WINNER! / 抽中了！' : 'SHUFFLING THE DECK... / 正在洗牌...'}
-            </h2>
-            <div className="flex-1 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 overflow-hidden">
-               {filteredStudents.map((s, idx) => (
-                 <div 
-                    key={s.id}
-                    className={`aspect-[3/4] rounded-xl border-2 transition-all duration-75 flex items-center justify-center overflow-hidden ${
-                      shuffleIndex === idx 
-                        ? 'bg-yellow-400 border-white scale-110 z-20 shadow-[0_0_20px_white]' 
-                        : shufflingWinner?.id === s.id
-                          ? 'bg-pokemon-yellow border-white scale-125 z-30 shadow-[0_0_40px_rgba(255,255,255,0.8)]'
-                          : 'bg-white/5 border-white/10 opacity-40'
-                    }`}
-                 >
-                   {(shuffleIndex === idx || (shufflingWinner?.id === s.id)) && (
-                     <img 
-                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${s.pokemonId}.png`} 
-                      className="w-full h-full object-contain p-1"
-                     />
-                   )}
-                 </div>
-               ))}
+        <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-sm rounded-[3rem] p-10 border-[10px] border-[#F06292] shadow-2xl relative animate-in zoom-in duration-300 flex flex-col items-center">
+            
+            {/* Header: SEARCHING... (Count/Total) */}
+            <div className="flex items-center gap-2 mb-8">
+               <span className="text-2xl">🔍</span>
+               <span className="text-[#F06292] font-black text-xl md:text-2xl tracking-tight uppercase">
+                 SEARCHING... ({shuffleIndex + 1}/{filteredStudents.length})
+               </span>
             </div>
-            {shufflingWinner && (
-              <div className="absolute inset-0 z-[130] flex flex-col items-center justify-center bg-black/40 backdrop-blur-md animate-in zoom-in duration-500">
-                <div className="bg-white rounded-[3rem] p-8 border-8 border-pokemon-yellow transform rotate-3 shadow-2xl">
-                  <img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${shufflingWinner.pokemonId}.png`} className="w-64 h-64 mx-auto" />
-                  <div className="text-center mt-6">
-                    <p className="pokemon-font text-orange-900 text-3xl mb-2">#{shufflingWinner.rollNo}</p>
-                    <p className="pokemon-font text-orange-900 text-2xl tracking-tighter">{shufflingWinner.name}</p>
-                  </div>
-                </div>
-              </div>
-            )}
+
+            {/* Pokemon Display Area: Light Pink Box */}
+            <div className="w-full aspect-[4/3] bg-[#FDF2F5] rounded-[2.5rem] flex items-center justify-center mb-10 overflow-hidden relative">
+               {shufflingStudent && (
+                 <img 
+                    key={shufflingStudent.id}
+                    src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shufflingStudent.pokemonId}.png`} 
+                    className={`w-40 h-40 object-contain drop-shadow-xl ${shufflingWinner ? 'scale-125' : 'animate-pulse'}`}
+                    alt="Pokemon"
+                 />
+               )}
+            </div>
+
+            {/* Student Info: Pink Large Text */}
+            <div className="text-center mb-10 min-h-[4rem] flex flex-col justify-center">
+              {shufflingStudent && (
+                <h3 className="text-[#D81B60] text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                   #{shufflingStudent.rollNo} {shufflingStudent.name}
+                </h3>
+              )}
+            </div>
+
+            {/* Buttons Row */}
+            <div className="flex gap-4 w-full">
+              <button 
+                onClick={() => {
+                  if (shufflingWinner) {
+                    setActingStudent(shufflingWinner);
+                    setIsShuffling(false);
+                  }
+                }}
+                disabled={!shufflingWinner}
+                className={`flex-1 py-4 rounded-3xl font-black text-xl transition-all shadow-lg active:scale-95 ${shufflingWinner ? 'bg-[#F06292] text-white hover:bg-[#E91E63]' : 'bg-pink-100 text-pink-300 cursor-not-allowed'}`}
+              >
+                評分
+              </button>
+              <button 
+                onClick={() => setIsShuffling(false)}
+                className="flex-1 py-4 rounded-3xl bg-[#F0F4F8] text-[#78909C] font-black text-xl hover:bg-[#E1E8EE] transition-all shadow-md active:scale-95"
+              >
+                CLOSE
+              </button>
+            </div>
           </div>
         </div>
       )}
