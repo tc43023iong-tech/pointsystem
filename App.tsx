@@ -326,7 +326,7 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FDF2F5] p-6 flex flex-col gap-6">
       {/* Top Header Card */}
-      <header className="bg-white rounded-[2.5rem] p-6 shadow-sm border border-pink-100/50 max-w-[1600px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-6 transition-all">
+      <header className="bg-white rounded-[2.5rem] p-6 shadow-sm border border-pink-100/50 max-w-[1800px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-6 transition-all">
         <div className="flex flex-col items-start gap-1">
           <h1 className="text-4xl font-bold text-[#D81B60] tracking-tight">Miss Iong's Class</h1>
           <p className="text-pink-400 font-bold flex items-center gap-2 text-sm">
@@ -373,7 +373,7 @@ const App: React.FC = () => {
       </header>
 
       {/* Control Bar Card */}
-      <div className="bg-white rounded-[2rem] p-3 shadow-sm border border-pink-100/50 max-w-[1600px] mx-auto w-full flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white rounded-[2rem] p-3 shadow-sm border border-pink-100/50 max-w-[1800px] mx-auto w-full flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <button onClick={() => setSortType(SortType.ID_ASC)} className={`${btnPillBase} ${sortType === SortType.ID_ASC ? sortActive : sortInactive}`}># ID / 學號</button>
           <button onClick={() => setSortType(SortType.SCORE_DESC)} className={`${btnPillBase} ${sortType === SortType.SCORE_DESC ? sortActive : sortInactive}`}>HI-LO / 高到低</button>
@@ -411,8 +411,9 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <main className="max-w-[1600px] mx-auto w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6 pb-24">
+      <main className="max-w-[1800px] mx-auto w-full">
+        {/* Adjusted Grid for 6 columns at xl desktop zoom */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 pb-24">
           {filteredStudents.map((student, index) => (
             <StudentCard 
               key={student.id} 
@@ -430,12 +431,11 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* NEW RANDOM PICK MODAL (Matching User Image Request) */}
+      {/* RANDOM PICK MODAL */}
       {isShuffling && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-sm rounded-[3rem] p-10 border-[10px] border-[#F06292] shadow-2xl relative animate-in zoom-in duration-300 flex flex-col items-center">
             
-            {/* Header: SEARCHING... (Count/Total) */}
             <div className="flex items-center gap-2 mb-8">
                <span className="text-2xl">🔍</span>
                <span className="text-[#F06292] font-black text-xl md:text-2xl tracking-tight uppercase">
@@ -443,7 +443,6 @@ const App: React.FC = () => {
                </span>
             </div>
 
-            {/* Pokemon Display Area: Light Pink Box */}
             <div className="w-full aspect-[4/3] bg-[#FDF2F5] rounded-[2.5rem] flex items-center justify-center mb-10 overflow-hidden relative">
                {shufflingStudent && (
                  <img 
@@ -455,7 +454,6 @@ const App: React.FC = () => {
                )}
             </div>
 
-            {/* Student Info: Pink Large Text */}
             <div className="text-center mb-10 min-h-[4rem] flex flex-col justify-center">
               {shufflingStudent && (
                 <h3 className="text-[#D81B60] text-3xl md:text-4xl font-black tracking-tight leading-tight">
@@ -464,7 +462,6 @@ const App: React.FC = () => {
               )}
             </div>
 
-            {/* Buttons Row */}
             <div className="flex gap-4 w-full">
               <button 
                 onClick={() => {
