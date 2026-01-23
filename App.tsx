@@ -316,28 +316,27 @@ const App: React.FC = () => {
 
   const pickedCount = (pickedIdsMap[selectedClassId] || []).filter(id => filteredStudents.some(fs => fs.id === id)).length;
 
-  const btnPillBase = "h-8 px-4 rounded-full font-bold text-[11px] flex items-center justify-center gap-1.5 transition-all shadow-sm active:translate-y-0.5";
-  const sortActive = "bg-pink-500 text-white";
-  const sortInactive = "bg-pink-50 text-pink-400";
+  const btnPillBase = "h-9 px-5 rounded-full font-bold text-[12px] flex items-center justify-center gap-2 transition-all shadow-sm active:translate-y-0.5";
+  const sortActive = "bg-[#F06292] text-white shadow-md ring-2 ring-pink-100";
+  const sortInactive = "bg-white text-pink-400 border border-pink-100 hover:bg-pink-50";
 
   // Current shuffling student display
   const shufflingStudent = shuffleIndex >= 0 ? filteredStudents[shuffleIndex] : null;
   
   return (
     <div className="min-h-screen bg-[#FDF2F5] p-6 flex flex-col gap-6">
-      {/* Top Header Card */}
-      <header className="bg-white rounded-[2.5rem] p-6 shadow-sm border border-pink-100/50 max-w-[1800px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-6 transition-all">
-        <div className="flex flex-col items-start gap-1">
-          <h1 className="text-4xl font-bold text-[#D81B60] tracking-tight">Miss Iong's Class</h1>
-          <p className="text-pink-400 font-bold flex items-center gap-2 text-sm">
-            ⭐ Point Management System / 學生積分系統 ⭐
-          </p>
+      {/* Header - Modernized */}
+      <header className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-pink-100/50 max-w-[1800px] mx-auto w-full flex flex-col md:flex-row items-center justify-between gap-8 transition-all">
+        <div className="flex flex-col items-start">
+          <h1 className="text-5xl font-black text-[#D81B60] tracking-tighter leading-none mb-1">
+            Miss Iong's Class
+          </h1>
         </div>
 
         <div className="flex flex-wrap items-center gap-4">
           <div className="relative group">
             <select 
-              className="appearance-none bg-[#FFD600] text-white px-8 py-4 rounded-[2rem] font-bold text-lg min-w-[280px] cursor-pointer outline-none shadow-md group-hover:bg-[#FFC400] transition-colors pr-12"
+              className="appearance-none bg-[#FFD600] hover:bg-[#FFC400] text-white px-10 py-4 rounded-[2rem] font-black text-xl min-w-[320px] cursor-pointer outline-none shadow-lg transition-all pr-14"
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
             >
@@ -345,36 +344,38 @@ const App: React.FC = () => {
                 <option key={c.id} value={c.id} className="text-black font-sans">{c.className}</option>
               ))}
             </select>
-            <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-white font-black">
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-white font-black text-xl">
               ▼
             </div>
           </div>
 
-          <button 
-            onClick={() => {
-              const data = JSON.stringify(classes, null, 2);
-              const blob = new Blob([data], { type: 'text/plain' });
-              const url = URL.createObjectURL(blob);
-              const link = document.createElement('a');
-              link.href = url;
-              link.download = `Miss_Iongs_Data_${new Date().toISOString().split('T')[0]}.txt`;
-              link.click();
-            }}
-            className="bg-[#64B5F6] hover:bg-[#42A5F5] text-white px-8 py-4 rounded-[2rem] font-bold text-lg flex items-center gap-3 shadow-md transition-all active:scale-95"
-          >
-            📥 EXPORT / 導出
-          </button>
+          <div className="flex gap-3">
+            <button 
+              onClick={() => {
+                const data = JSON.stringify(classes, null, 2);
+                const blob = new Blob([data], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `Miss_Iongs_Data_${new Date().toISOString().split('T')[0]}.txt`;
+                link.click();
+              }}
+              className="bg-[#64B5F6] hover:bg-[#42A5F5] text-white px-8 py-4 rounded-[2rem] font-black text-lg flex items-center gap-3 shadow-md transition-all active:scale-95"
+            >
+              📥 EXPORT / 導出
+            </button>
 
-          <label className="bg-[#4DB6AC] hover:bg-[#26A69A] text-white px-8 py-4 rounded-[2rem] font-bold text-lg flex items-center gap-3 shadow-md cursor-pointer transition-all active:scale-95">
-            📤 IMPORT / 導入
-            <input type="file" className="hidden" accept=".txt" onChange={handleImport} />
-          </label>
+            <label className="bg-[#4DB6AC] hover:bg-[#26A69A] text-white px-8 py-4 rounded-[2rem] font-black text-lg flex items-center gap-3 shadow-md cursor-pointer transition-all active:scale-95">
+              📤 IMPORT / 導入
+              <input type="file" className="hidden" accept=".txt" onChange={handleImport} />
+            </label>
+          </div>
         </div>
       </header>
 
-      {/* Control Bar Card */}
-      <div className="bg-white rounded-[2rem] p-3 shadow-sm border border-pink-100/50 max-w-[1800px] mx-auto w-full flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+      {/* Control Bar - Cleaner and more professional */}
+      <div className="bg-white/80 backdrop-blur-md rounded-[2.2rem] p-4 px-6 shadow-sm border border-pink-100/30 max-w-[1800px] mx-auto w-full flex flex-wrap items-center justify-between gap-6">
+        <div className="flex items-center gap-3">
           <button onClick={() => setSortType(SortType.ID_ASC)} className={`${btnPillBase} ${sortType === SortType.ID_ASC ? sortActive : sortInactive}`}># ID / 學號</button>
           <button onClick={() => setSortType(SortType.SCORE_DESC)} className={`${btnPillBase} ${sortType === SortType.SCORE_DESC ? sortActive : sortInactive}`}>HI-LO / 高到低</button>
           <button onClick={() => setSortType(SortType.SCORE_ASC)} className={`${btnPillBase} ${sortType === SortType.SCORE_ASC ? sortActive : sortInactive}`}>LO-HI / 低到高</button>
@@ -383,36 +384,37 @@ const App: React.FC = () => {
         <div className="flex items-center gap-4">
           <button 
             onClick={() => { setIsMultiSelect(!isMultiSelect); if (isMultiSelect) setSelectedIds(new Set()); }}
-            className={`h-8 px-4 rounded-full font-bold text-[11px] shadow-sm transition-all flex items-center gap-1.5 ${isMultiSelect ? 'bg-pink-500 text-white ring-2 ring-pink-200 scale-105' : 'bg-white border-2 border-gray-200 text-gray-500 hover:border-pink-300'}`}
+            className={`h-9 px-5 rounded-full font-black text-[12px] shadow-sm transition-all flex items-center gap-2 ${isMultiSelect ? 'bg-[#D81B60] text-white ring-4 ring-pink-100 scale-105' : 'bg-white border-2 border-slate-100 text-slate-400 hover:border-pink-200 hover:text-pink-400'}`}
           >
-            <span className="text-sm">{isMultiSelect ? '☑️' : '🔘'}</span>多選模式
+            <span className="text-lg leading-none">{isMultiSelect ? '☑️' : '🔘'}</span> 多選模式
           </button>
 
-          <div className="flex items-center gap-1.5">
-            <button onClick={selectAllFiltered} className="h-8 px-4 rounded-full bg-[#B39DDB] text-white font-bold text-[11px] shadow-sm hover:bg-[#9575CD] transition-colors">全選</button>
-            <button onClick={deselectAll} className="h-8 px-4 rounded-full bg-[#E1E2E6] text-gray-500 font-bold text-[11px] shadow-sm hover:bg-gray-300 transition-colors">取消</button>
+          <div className="h-6 w-px bg-slate-100 mx-1"></div>
+
+          <div className="flex items-center gap-2">
+            <button onClick={selectAllFiltered} className="h-9 px-5 rounded-full bg-[#B39DDB]/20 text-[#673AB7] hover:bg-[#B39DDB]/40 font-black text-[12px] transition-all">全選</button>
+            <button onClick={deselectAll} className="h-9 px-5 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 font-black text-[12px] transition-all">取消</button>
           </div>
 
-          <div className="flex items-center">
-            <button onClick={handleRandomPick} className="h-8 pl-4 pr-3 rounded-l-full bg-[#FF8A80] text-white font-bold text-[11px] flex items-center gap-2 shadow-sm hover:bg-[#FF5252] transition-colors">
+          <div className="flex items-center bg-slate-50 rounded-full p-0.5 shadow-inner border border-slate-100">
+            <button onClick={handleRandomPick} className="h-8 pl-5 pr-4 rounded-l-full bg-[#FFAB91] hover:bg-[#FF8A65] text-white font-black text-[11px] flex items-center gap-2 transition-all">
               隨機 ({pickedCount}/{filteredStudents.length})
             </button>
-            <button onClick={handleResetPicked} className="h-8 px-3 rounded-r-full bg-[#CFD8DC] text-gray-600 hover:bg-gray-400 transition-colors shadow-sm" title="Reset picked list">🔄</button>
+            <button onClick={handleResetPicked} className="h-8 px-3 rounded-r-full bg-slate-200 text-slate-500 hover:bg-slate-300 transition-all border-l border-white/30" title="Reset picked list">🔄</button>
           </div>
 
           <button 
             onClick={() => { if (selectedIds.size > 0) setBulkActing(true); }}
-            className={`h-9 px-6 rounded-full font-bold text-sm text-white transition-all shadow-md flex items-center gap-2 ${selectedIds.size > 0 ? 'bg-[#F06292] hover:bg-[#E91E63] scale-105' : 'bg-gray-300 cursor-not-allowed'}`}
+            className={`h-10 px-8 rounded-full font-black text-[13px] text-white transition-all shadow-lg flex items-center gap-3 ${selectedIds.size > 0 ? 'bg-[#F06292] hover:bg-[#E91E63] scale-105' : 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'}`}
           >
             獎懲評分 ({selectedIds.size})
           </button>
 
-          <button onClick={() => setShowRules(true)} className="w-9 h-9 bg-[#FFD54F] hover:bg-[#FFC107] text-orange-900 rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 text-lg">🔔</button>
+          <button onClick={() => setShowRules(true)} className="w-10 h-10 bg-[#FFD54F] hover:bg-[#FFC107] text-orange-900 rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 text-xl">🔔</button>
         </div>
       </div>
 
       <main className="max-w-[1800px] mx-auto w-full">
-        {/* Adjusted Grid for 6 columns at xl desktop zoom */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6 pb-24">
           {filteredStudents.map((student, index) => (
             <StudentCard 
