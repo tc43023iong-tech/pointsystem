@@ -102,8 +102,8 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
                 {delta > 0 ? `+${delta}` : delta}
              </div>
              {reason && (
-               <div className="bg-pink-50/50 px-4 py-1 rounded-xl border border-pink-100/50">
-                 <span className="text-pink-400 text-xs font-black uppercase tracking-widest">
+               <div className="bg-pink-50/50 px-6 py-2 rounded-xl border border-pink-100/50 mt-1">
+                 <span className="text-pink-500 text-xl font-black tracking-tight block">
                     {reason}
                  </span>
                </div>
