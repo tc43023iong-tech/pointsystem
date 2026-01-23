@@ -46,9 +46,10 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
 
   return (
     <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-      <div className="bg-white w-full max-w-7xl rounded-[2rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col border-[4px] border-white max-h-[94vh]">
+      {/* Container narrowed to max-w-5xl */}
+      <div className="bg-white w-full max-w-5xl rounded-[2rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col border-[4px] border-white max-h-[94vh]">
         
-        {/* Header - Ultra Compact */}
+        {/* Header - Now matches content width */}
         <div className="bg-[#F06292] p-2 px-8 flex justify-between items-center shrink-0 shadow-md z-10">
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center border-2 border-white shadow-md overflow-hidden shrink-0">
@@ -77,33 +78,31 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
         {/* Main Content Area */}
         <div className="p-4 bg-[#FFFBFC] flex-1 overflow-hidden flex flex-col gap-3">
           
-          {/* Top Row: Manual Input (Ultra Tight) */}
-          <div className="max-w-5xl mx-auto w-full">
-            <section className="bg-white p-1.5 px-5 rounded-2xl border border-dashed border-pink-200 flex items-center gap-4 shrink-0 shadow-sm mx-1">
-              <div className="flex flex-col shrink-0 min-w-[60px] leading-none">
-                <h4 className="font-black text-pink-400 uppercase text-[8px] tracking-[0.1em] mb-0.5">MANUAL</h4>
-                <p className="text-slate-400 font-bold text-[10px]">手動輸入</p>
-              </div>
-              <form onSubmit={handleManualSubmit} className="flex-1 flex gap-2">
-                <input 
-                  type="number"
-                  placeholder="輸入分數 (10, -5)..."
-                  className="flex-1 p-1 px-4 rounded-lg bg-pink-50/10 border border-pink-100 focus:border-[#F06292] focus:bg-white outline-none text-base font-black transition-all placeholder:text-pink-100 h-9"
-                  value={manualValue}
-                  onChange={(e) => setManualValue(e.target.value)}
-                />
-                <button 
-                  type="submit"
-                  className="bg-[#F06292] text-white font-black px-6 rounded-lg hover:bg-[#E91E63] transition-all shadow-sm active:scale-95 text-sm h-9"
-                >
-                  確認應用
-                </button>
-              </form>
-            </section>
-          </div>
+          {/* Top Row: Manual Input */}
+          <section className="bg-white p-1.5 px-5 rounded-2xl border border-dashed border-pink-200 flex items-center gap-4 shrink-0 shadow-sm mx-1">
+            <div className="flex flex-col shrink-0 min-w-[60px] leading-none">
+              <h4 className="font-black text-pink-400 uppercase text-[8px] tracking-[0.1em] mb-0.5">MANUAL</h4>
+              <p className="text-slate-400 font-bold text-[10px]">手動輸入</p>
+            </div>
+            <form onSubmit={handleManualSubmit} className="flex-1 flex gap-2">
+              <input 
+                type="number"
+                placeholder="輸入分數 (10, -5)..."
+                className="flex-1 p-1 px-4 rounded-lg bg-pink-50/10 border border-pink-100 focus:border-[#F06292] focus:bg-white outline-none text-base font-black transition-all placeholder:text-pink-100 h-9"
+                value={manualValue}
+                onChange={(e) => setManualValue(e.target.value)}
+              />
+              <button 
+                type="submit"
+                className="bg-[#F06292] text-white font-black px-6 rounded-lg hover:bg-[#E91E63] transition-all shadow-sm active:scale-95 text-sm h-9"
+              >
+                確認應用
+              </button>
+            </form>
+          </section>
 
-          {/* Bottom Grid: Narrower and focused */}
-          <div className="grid grid-cols-2 gap-6 flex-1 overflow-hidden px-1 max-w-5xl mx-auto w-full">
+          {/* Bottom Grid: Focused Layout */}
+          <div className="grid grid-cols-2 gap-6 flex-1 overflow-hidden px-1 w-full">
             
             {/* Left Column: Positive */}
             <div className="flex flex-col overflow-hidden bg-green-50/10 rounded-[1.5rem] p-3 border border-green-50">
