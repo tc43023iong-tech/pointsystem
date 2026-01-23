@@ -4,6 +4,7 @@ import { INITIAL_CLASSES } from './constants';
 import { Student, ClassData, SortType, PointAction } from './types';
 import { StudentCard } from './components/StudentCard';
 import { ActionModal } from './components/ActionModal';
+import { AcademicRulesModal } from './components/AcademicRulesModal';
 import { PokemonSelector } from './components/PokemonSelector';
 import { FeedbackOverlay } from './components/FeedbackOverlay';
 import { audioService } from './audioService';
@@ -17,6 +18,7 @@ const App: React.FC = () => {
   // Modals & Overlays
   const [actingStudent, setActingStudent] = useState<Student | null>(null);
   const [bulkActing, setBulkActing] = useState<boolean>(false);
+  const [showAcademicRules, setShowAcademicRules] = useState<boolean>(false);
   const [pokeselStudent, setPokeselStudent] = useState<Student | null>(null);
   const [feedback, setFeedback] = useState<{ student: Student, type: 'positive' | 'negative', reason?: string, delta: number } | null>(null);
   
@@ -128,7 +130,7 @@ const App: React.FC = () => {
       }
     } else {
       setFeedback({
-        student: { id: 'group', name: '所選學生團隊', points: 0, rollNo: 0, pokemonId: 25 } as any,
+        student: { id: 'group', name: `${studentIds.length}位學生`, points: 0, rollNo: 0, pokemonId: 25 } as any,
         type: points > 0 ? 'positive' : 'negative',
         reason: labelZh || '集體獎勵',
         delta: points
@@ -290,7 +292,10 @@ const App: React.FC = () => {
               獎懲評分 ({selectedIds.size})
             </button>
 
-            <button className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-xl shadow-md border-b-2 border-yellow-600 hover:scale-110 active:scale-95 transition-all">
+            <button 
+              onClick={() => setShowAcademicRules(true)}
+              className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-xl shadow-md border-b-2 border-yellow-600 hover:scale-110 active:scale-95 transition-all"
+            >
               🔔
             </button>
           </div>
@@ -332,23 +337,27 @@ const App: React.FC = () => {
 
       {(actingStudent || bulkActing) && (
         <ActionModal 
-          student={actingStudent || { name: `${selectedIds.size}位所選學生`, rollNo: 0, pokemonId: 25 } as any}
+          student={actingStudent || { name: `${selectedIds.size}位學生`, rollNo: 0, pokemonId: 25 } as any}
           onClose={() => { setActingStudent(null); setBulkActing(false); }}
           onAction={(action) => {
-            const ids = actingStudent ? [actingStudent.id] : Array.from(selectedIds);
+            const ids = actingStudent ? [actingStudent.id] : (Array.from(selectedIds) as string[]);
             updateStudentPoints(ids, action.points, action.labelZh);
             setActingStudent(null);
             setBulkActing(false);
             if (bulkActing) { setIsMultiSelect(false); setSelectedIds(new Set()); }
           }}
           onManualPoint={(points) => {
-            const ids = actingStudent ? [actingStudent.id] : Array.from(selectedIds);
+            const ids = actingStudent ? [actingStudent.id] : (Array.from(selectedIds) as string[]);
             updateStudentPoints(ids, points, points > 0 ? '手動加分' : '手動減分');
             setActingStudent(null);
             setBulkActing(false);
             if (bulkActing) { setIsMultiSelect(false); setSelectedIds(new Set()); }
           }}
         />
+      )}
+
+      {showAcademicRules && (
+        <AcademicRulesModal onClose={() => setShowAcademicRules(false)} />
       )}
 
       {pokeselStudent && (

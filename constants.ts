@@ -25,13 +25,20 @@ export const ACTIONS: PointAction[] = [
   { labelEn: "You have gone too far 😡!", labelZh: "你太過分/離譜了😡！", points: -10, type: 'negative' },
 ];
 
+export const ACADEMIC_ACTIONS: PointAction[] = [
+  { labelEn: "Score 100 or above", labelZh: "100或以上", points: 25, type: 'positive' },
+  { labelEn: "Score 90～99", labelZh: "90～99", points: 20, type: 'positive' },
+  { labelEn: "Score 80～89", labelZh: "80～89", points: 15, type: 'positive' },
+  { labelEn: "Score 70～79", labelZh: "70～79", points: 10, type: 'positive' },
+  { labelEn: "Score 60～69", labelZh: "60～69", points: 5, type: 'positive' },
+];
+
 const parseClassList = (name: string, list: string): any[] => {
   return list.split('\n').filter(l => l.trim()).map(line => {
     const parts = line.trim().split(/\s+/);
     const rollNo = parseInt(parts[0]);
     const studentName = parts.slice(1).join(' ');
     
-    // Bias towards "cute" classic Pokemon (IDs 1-251 cover Gen 1 & 2)
     const isCuteSeed = Math.random() > 0.3;
     const pokemonId = isCuteSeed 
       ? Math.floor(Math.random() * 151) + 1 
