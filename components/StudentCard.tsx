@@ -30,7 +30,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
       className={`relative bg-white rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col p-6 border-4 overflow-hidden ${
         isSelected 
           ? 'border-[#F06292] ring-4 ring-pink-50 scale-[1.02] z-10' 
-          : 'border-transparent hover:border-pink-100'
+          : 'border-transparent hover:border-[#F06292]/40 hover:ring-2 hover:ring-pink-50'
       }`}
       onClick={onClick}
     >
@@ -65,7 +65,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
           </h3>
         </div>
 
-        {/* Score Badge (Right Side) - Hidden or moved when tick is present to avoid overlap if needed, but here we place it normally */}
+        {/* Score Badge (Right Side) */}
         <div className="flex flex-col items-center justify-center min-w-[58px] min-h-[58px] bg-[#FFF9E1] border-2 border-[#FFE082] rounded-2xl shadow-sm animate-in zoom-in duration-300">
            <span className="text-[#B48A00] text-xs leading-none mt-1">★</span>
            <span className="text-[#855C00] text-2xl font-black leading-tight -mt-0.5 px-2">

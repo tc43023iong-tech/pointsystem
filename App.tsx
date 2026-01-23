@@ -98,6 +98,24 @@ const App: React.FC = () => {
     return list;
   }, [students, searchQuery, sortType]);
 
+  // Pre-calculate ranks for tied scores when sorting by score desc
+  // Standard Competition Ranking: 1, 2, 2, 4...
+  const studentRanks = useMemo(() => {
+    const ranks: Record<string, number> = {};
+    if (sortType !== SortType.SCORE_DESC) return ranks;
+
+    filteredAndSortedStudents.forEach((student, idx) => {
+      if (idx > 0 && student.points === filteredAndSortedStudents[idx - 1].points) {
+        // Tied with previous, same rank
+        ranks[student.id] = ranks[filteredAndSortedStudents[idx - 1].id];
+      } else {
+        // Different score, rank matches position (idx + 1)
+        ranks[student.id] = idx + 1;
+      }
+    });
+    return ranks;
+  }, [filteredAndSortedStudents, sortType]);
+
   const updateStudentPoints = (studentIds: string[], points: number, labelZh?: string) => {
     setClasses(prev => prev.map(c => {
       if (c.id !== selectedClassId) return c;
@@ -312,7 +330,7 @@ const App: React.FC = () => {
             >
               <StudentCard 
                 student={student} 
-                rank={sortType === SortType.SCORE_DESC ? idx + 1 : undefined}
+                rank={studentRanks[student.id]}
                 isSelected={selectedIds.has(student.id)}
                 isMultiSelectMode={isMultiSelect}
                 onClick={() => {
