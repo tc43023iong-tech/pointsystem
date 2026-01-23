@@ -203,26 +203,30 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FFF5F7] flex flex-col gap-3 pb-8">
       
-      {/* Header - Narrowed py-3 */}
+      {/* Header - Unified with Control Bar colors */}
       <header className="bg-white/90 backdrop-blur-md sticky top-0 z-[100] py-3 px-8 flex justify-between items-center shadow-sm border-b border-pink-50">
         <h1 className="text-3xl font-black text-[#D81B60] tracking-tighter">Miss Iong's Class</h1>
         
         <div className="flex gap-3 items-center">
+          {/* Unified Class Selector */}
           <div className="relative">
             <select 
-              className="appearance-none bg-[#FFD600] text-white font-black py-2 px-8 pr-12 rounded-full cursor-pointer focus:outline-none focus:ring-4 focus:ring-yellow-200 shadow-md border-b-4 border-yellow-600 transition-all text-sm hover:translate-y-0.5 active:translate-y-1 active:border-b-0"
+              className="appearance-none bg-white text-[#F06292] font-black py-2 px-8 pr-12 rounded-full cursor-pointer focus:outline-none focus:ring-4 focus:ring-pink-100 shadow-sm border-2 border-pink-100 hover:border-[#F06292] hover:bg-pink-50 transition-all text-sm active:scale-95"
               value={selectedClassId}
               onChange={(e) => setSelectedClassId(e.target.value)}
             >
               {classes.map(c => <option key={c.id} value={c.id} className="text-slate-800">{c.className}</option>)}
             </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white font-black">▼</div>
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#F06292] font-black">▼</div>
           </div>
           
-          <button onClick={handleExport} className={`${btnWhite} px-6 text-sm py-2 bg-gradient-to-r from-blue-400 to-blue-500 !text-white !border-blue-600 border-b-4 !shadow-md`}>
+          {/* Unified Export Button */}
+          <button onClick={handleExport} className={`${btnWhite} px-6 text-sm py-2`}>
             📩 EXPORT / 導出
           </button>
-          <button onClick={handleImport} className={`${btnWhite} px-6 text-sm py-2 bg-gradient-to-r from-teal-400 to-teal-500 !text-white !border-teal-600 border-b-4 !shadow-md`}>
+          
+          {/* Unified Import Button */}
+          <button onClick={handleImport} className={`${btnWhite} px-6 text-sm py-2`}>
             📩 IMPORT / 導入
           </button>
         </div>
