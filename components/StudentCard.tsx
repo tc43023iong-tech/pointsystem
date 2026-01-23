@@ -34,9 +34,17 @@ export const StudentCard: React.FC<StudentCardProps> = ({
       }`}
       onClick={onClick}
     >
-      {/* Selection Overlay */}
+      {/* Selection Overlay & Tick Mark */}
       {isMultiSelectMode && isSelected && (
-        <div className="absolute inset-0 bg-pink-500/5 z-20 pointer-events-none"></div>
+        <>
+          <div className="absolute inset-0 bg-pink-500/5 z-20 pointer-events-none"></div>
+          {/* Pink Tick Badge */}
+          <div className="absolute top-4 right-4 z-40 bg-[#F06292] w-8 h-8 rounded-full border-2 border-white shadow-md flex items-center justify-center animate-in zoom-in duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+        </>
       )}
 
       {/* Header Section: Info & Score */}
@@ -57,7 +65,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
           </h3>
         </div>
 
-        {/* Score Badge (Right Side) */}
+        {/* Score Badge (Right Side) - Hidden or moved when tick is present to avoid overlap if needed, but here we place it normally */}
         <div className="flex flex-col items-center justify-center min-w-[58px] min-h-[58px] bg-[#FFF9E1] border-2 border-[#FFE082] rounded-2xl shadow-sm animate-in zoom-in duration-300">
            <span className="text-[#B48A00] text-xs leading-none mt-1">★</span>
            <span className="text-[#855C00] text-2xl font-black leading-tight -mt-0.5 px-2">

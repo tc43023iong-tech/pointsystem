@@ -45,23 +45,24 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
     <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white w-full max-w-6xl rounded-[3rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col border-[8px] border-white max-h-[96vh]">
         
-        {/* Header - Larger Text */}
-        <div className="bg-[#F06292] p-5 px-8 flex justify-between items-center shrink-0">
-          <div className="flex items-center gap-6">
-            <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center border-[3.5px] border-black shadow-sm overflow-hidden shrink-0">
+        {/* Header - Massive Text for Name and Roll No */}
+        <div className="bg-[#F06292] p-6 px-10 flex justify-between items-center shrink-0">
+          <div className="flex items-center gap-8">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center border-[4px] border-black shadow-sm overflow-hidden shrink-0">
               <img 
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${student.pokemonId}.png`} 
-                className="w-12 h-12 object-contain"
+                className="w-14 h-14 object-contain"
                 alt="Avatar"
               />
             </div>
-            <h2 className="text-3xl font-black text-white tracking-tight">
-              #{student.rollNo} {student.name}
+            <h2 className="text-5xl font-black text-white tracking-tighter">
+              <span className="opacity-80 mr-4">#{student.rollNo}</span>
+              {student.name}
             </h2>
           </div>
           <button 
             onClick={onClose} 
-            className="text-white text-5xl hover:opacity-70 transition-opacity pr-2 leading-none"
+            className="text-white text-6xl hover:opacity-70 transition-opacity pr-2 leading-none"
           >
             &times;
           </button>
