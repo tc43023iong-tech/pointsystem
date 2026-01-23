@@ -117,7 +117,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
                   <button
                     key={idx}
                     onClick={() => onAction(action)}
-                    className="w-full flex justify-between items-center p-1.5 px-4 rounded-xl bg-white border border-slate-50 hover:border-green-300 transition-all text-left group shadow-sm active:scale-[0.99] border-b-2 active:border-b active:translate-y-0.5"
+                    className="w-full flex justify-between items-center p-1.5 px-4 rounded-xl bg-white border border-slate-50 hover:border-green-400 hover:bg-green-50 transition-all text-left group shadow-sm active:scale-[0.99] border-b-2 active:border-b active:translate-y-0.5"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-2xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭐'}</span>
@@ -148,7 +148,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
                   <button
                     key={idx}
                     onClick={() => onAction(action)}
-                    className="w-full flex justify-between items-center p-1.5 px-4 rounded-xl bg-white border border-slate-50 hover:border-red-300 transition-all text-left group shadow-sm active:scale-[0.99] border-b-2 active:border-b active:translate-y-0.5"
+                    className="w-full flex justify-between items-center p-1.5 px-4 rounded-xl bg-white border border-slate-50 hover:border-red-400 hover:bg-red-50 transition-all text-left group shadow-sm active:scale-[0.99] border-b-2 active:border-b active:translate-y-0.5"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-2xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭕'}</span>
