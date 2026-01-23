@@ -49,22 +49,22 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
       {/* Container narrowed to max-w-5xl */}
       <div className="bg-white w-full max-w-5xl rounded-[2rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col border-[4px] border-white max-h-[94vh]">
         
-        {/* Header - Now matches content width */}
-        <div className="bg-[#F06292] p-2 px-8 flex justify-between items-center shrink-0 shadow-md z-10">
-          <div className="flex items-center gap-4">
-            <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center border-2 border-white shadow-md overflow-hidden shrink-0">
+        {/* Header - Increased text size for Name and ID */}
+        <div className="bg-[#F06292] py-4 px-8 flex justify-between items-center shrink-0 shadow-md z-10">
+          <div className="flex items-center gap-6">
+            <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center border-4 border-white shadow-md overflow-hidden shrink-0">
               <img 
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${student.pokemonId}.png`} 
-                className="w-8 h-8 object-contain"
+                className="w-10 h-10 object-contain"
                 alt="Avatar"
               />
             </div>
-            <div className="flex flex-col leading-tight">
-              <h2 className="text-2xl font-black text-white tracking-tighter">
-                <span className="opacity-70 mr-2 text-lg">#{student.rollNo}</span>
+            <div className="flex flex-col leading-none">
+              <h2 className="text-4xl font-black text-white tracking-tighter flex items-baseline">
+                <span className="opacity-70 mr-4 text-3xl font-bold">#{student.rollNo}</span>
                 {student.name}
               </h2>
-              <span className="text-pink-100 text-[8px] font-bold tracking-[0.2em] uppercase">Point Manager / 獎懲管理系統</span>
+              <span className="text-pink-100 text-[10px] font-bold tracking-[0.3em] uppercase mt-1">Point Manager / 獎懲管理系統</span>
             </div>
           </div>
           <button 
