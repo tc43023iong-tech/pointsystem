@@ -41,111 +41,136 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
     }
   };
 
+  const positiveActions = ACTIONS.filter(a => a.type === 'positive');
+  const negativeActions = ACTIONS.filter(a => a.type === 'negative');
+
   return (
-    <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white w-full max-w-7xl rounded-[3rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col border-[8px] border-white max-h-[96vh]">
+    <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+      <div className="bg-white w-full max-w-7xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col border-[6px] border-white max-h-[96vh]">
         
-        {/* Header - Massive & Clear */}
-        <div className="bg-[#F06292] p-6 px-10 flex justify-between items-center shrink-0">
-          <div className="flex items-center gap-8">
-            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center border-[4px] border-black shadow-sm overflow-hidden shrink-0">
+        {/* Header - More Compact Height */}
+        <div className="bg-[#F06292] p-4 px-10 flex justify-between items-center shrink-0 shadow-lg z-10">
+          <div className="flex items-center gap-6">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center border-4 border-white shadow-lg overflow-hidden shrink-0">
               <img 
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${student.pokemonId}.png`} 
-                className="w-16 h-16 object-contain"
+                className="w-12 h-12 object-contain"
                 alt="Avatar"
               />
             </div>
-            <h2 className="text-6xl font-black text-white tracking-tighter">
-              <span className="opacity-80 mr-6">#{student.rollNo}</span>
-              {student.name}
-            </h2>
+            <div className="flex flex-col">
+              <h2 className="text-4xl font-black text-white tracking-tighter leading-none">
+                <span className="opacity-70 mr-3 text-2xl">#{student.rollNo}</span>
+                {student.name}
+              </h2>
+              <span className="text-pink-100 text-xs font-bold tracking-[0.2em] uppercase mt-0.5">Point Action Manager / 課堂獎懲評分</span>
+            </div>
           </div>
           <button 
             onClick={onClose} 
-            className="text-white text-7xl hover:opacity-70 transition-opacity pr-2 leading-none"
+            className="text-white text-6xl hover:scale-110 transition-transform leading-none"
           >
             &times;
           </button>
         </div>
         
-        <div className="p-10 bg-[#FFFBFC] flex-1 overflow-hidden flex flex-col gap-8">
-          {/* Manual Input Row */}
-          <div className="bg-white p-6 rounded-[2.5rem] border-3 border-dashed border-pink-100 shadow-sm flex items-center gap-10 shrink-0">
-            <h4 className="font-black text-pink-400 uppercase text-sm tracking-[0.25em] whitespace-nowrap pl-4">MANUAL / 手動調整</h4>
-            <form onSubmit={handleManualSubmit} className="flex-1 flex gap-6">
+        {/* Main Content Area */}
+        <div className="p-6 bg-[#FFFBFC] flex-1 overflow-hidden flex flex-col gap-5">
+          
+          {/* Top Row: Manual Input (More Compact) */}
+          <section className="bg-white p-4 rounded-[1.8rem] border-2 border-dashed border-pink-100 flex items-center gap-6 shrink-0 shadow-sm mx-2">
+            <div className="flex flex-col pl-2">
+              <h4 className="font-black text-pink-400 uppercase text-[10px] tracking-[0.3em]">MANUAL INPUT</h4>
+              <p className="text-slate-400 font-bold text-sm">手動加減分</p>
+            </div>
+            <form onSubmit={handleManualSubmit} className="flex-1 flex gap-4">
               <input 
                 type="number"
-                placeholder="輸入加減分數 (例如: 10 或 -5)"
-                className="flex-1 p-5 px-10 rounded-3xl bg-pink-50/30 border-2 border-pink-50 focus:border-[#F06292] focus:bg-white outline-none text-2xl font-black transition-all placeholder:text-pink-200"
+                placeholder="輸入分數 (例如: 10 或 -5)..."
+                className="flex-1 p-3 px-6 rounded-2xl bg-pink-50/20 border-2 border-pink-50 focus:border-[#F06292] focus:bg-white outline-none text-xl font-black transition-all placeholder:text-pink-100"
                 value={manualValue}
                 onChange={(e) => setManualValue(e.target.value)}
               />
               <button 
                 type="submit"
-                className="bg-[#F06292] text-white font-black px-12 rounded-3xl hover:bg-[#E91E63] transition-all shadow-lg active:scale-95 whitespace-nowrap text-xl"
+                className="bg-[#F06292] text-white font-black px-10 rounded-2xl hover:bg-[#E91E63] transition-all shadow-md active:scale-95 text-lg"
               >
                 確認應用
               </button>
             </form>
-          </div>
+          </section>
 
-          <div className="grid grid-cols-2 gap-12 flex-1 overflow-hidden">
-            {/* Positive Section - One item per row */}
-            <div className="flex flex-col overflow-hidden">
-              <div className="flex items-center gap-4 pb-4 mb-6 border-b-4 border-green-100 px-2 shrink-0">
-                <span className="text-4xl">✨</span>
-                <p className="font-black text-green-600 uppercase tracking-[0.2em] text-xl">POSITIVE / 加分行為</p>
+          {/* Bottom Grid: Tighter gap and spacing */}
+          <div className="grid grid-cols-2 gap-6 flex-1 overflow-hidden px-2">
+            
+            {/* Left Column: Positive */}
+            <div className="flex flex-col overflow-hidden bg-green-50/30 rounded-[2rem] p-4 border border-green-100">
+              <div className="flex items-center gap-3 pb-3 mb-3 border-b-2 border-green-100 px-2 shrink-0">
+                <span className="text-3xl">✨</span>
+                <div className="flex flex-col">
+                  <p className="font-black text-green-600 uppercase tracking-[0.2em] text-[10px] leading-none mb-0.5">POSITIVE ACTIONS</p>
+                  <p className="text-xl font-black text-green-700">加分項目</p>
+                </div>
               </div>
-              <div className="flex-1 overflow-y-auto pr-4 space-y-4 pb-6">
-                {ACTIONS.filter(a => a.type === 'positive').map((action, idx) => (
+              <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 pb-4 custom-scrollbar">
+                {positiveActions.map((action, idx) => (
                   <button
                     key={idx}
                     onClick={() => onAction(action)}
-                    className="w-full flex justify-between items-center p-6 px-10 rounded-[2.2rem] bg-white border-2 border-slate-50 hover:border-green-300 hover:bg-green-50/50 transition-all text-left group shadow-sm active:scale-[0.98]"
+                    className="w-full flex justify-between items-center p-3 px-6 rounded-2xl bg-white border border-slate-100 hover:border-green-300 hover:bg-white transition-all text-left group shadow-sm active:scale-[0.98] border-b-4 active:border-b active:translate-y-0.5"
                   >
-                    <div className="flex items-center gap-8">
-                      <span className="text-5xl shrink-0 drop-shadow-sm">{EMOJI_MAP[action.labelZh] || '⭐'}</span>
+                    <div className="flex items-center gap-5">
+                      <span className="text-4xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭐'}</span>
                       <div className="flex flex-col">
-                        <span className="font-black text-slate-800 text-3xl leading-none mb-2">{action.labelZh}</span>
-                        <span className="text-sm text-slate-400 font-bold uppercase tracking-widest">{action.labelEn}</span>
+                        <span className="font-black text-slate-800 text-xl leading-tight">{action.labelZh}</span>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em]">{action.labelEn}</span>
                       </div>
                     </div>
-                    <div className="text-5xl font-black text-green-500 shrink-0 ml-4 tabular-nums">+{action.points}</div>
+                    <div className="bg-green-500 text-white px-5 py-2 rounded-xl text-2xl font-black shadow-sm min-w-[80px] text-center tabular-nums">
+                      +{action.points}
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Negative Section - One item per row */}
-            <div className="flex flex-col overflow-hidden">
-              <div className="flex items-center gap-4 pb-4 mb-6 border-b-4 border-red-100 px-2 shrink-0">
-                <span className="text-4xl">⚠️</span>
-                <p className="font-black text-red-600 uppercase tracking-[0.2em] text-xl">NEGATIVE / 減分行為</p>
+            {/* Right Column: Negative */}
+            <div className="flex flex-col overflow-hidden bg-red-50/30 rounded-[2rem] p-4 border border-red-100">
+              <div className="flex items-center gap-3 pb-3 mb-3 border-b-2 border-red-100 px-2 shrink-0">
+                <span className="text-3xl">⚠️</span>
+                <div className="flex flex-col">
+                  <p className="font-black text-red-600 uppercase tracking-[0.2em] text-[10px] leading-none mb-0.5">NEGATIVE ACTIONS</p>
+                  <p className="text-xl font-black text-red-700">減分項目</p>
+                </div>
               </div>
-              <div className="flex-1 overflow-y-auto pr-4 space-y-4 pb-6">
-                {ACTIONS.filter(a => a.type === 'negative').map((action, idx) => (
+              <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 pb-4 custom-scrollbar">
+                {negativeActions.map((action, idx) => (
                   <button
                     key={idx}
                     onClick={() => onAction(action)}
-                    className="w-full flex justify-between items-center p-6 px-10 rounded-[2.2rem] bg-white border-2 border-slate-50 hover:border-red-300 hover:bg-red-50/50 transition-all text-left group shadow-sm active:scale-[0.98]"
+                    className="w-full flex justify-between items-center p-3 px-6 rounded-2xl bg-white border border-slate-100 hover:border-red-300 hover:bg-white transition-all text-left group shadow-sm active:scale-[0.98] border-b-4 active:border-b active:translate-y-0.5"
                   >
-                    <div className="flex items-center gap-8">
-                      <span className="text-5xl shrink-0 drop-shadow-sm">{EMOJI_MAP[action.labelZh] || '⭕'}</span>
+                    <div className="flex items-center gap-5">
+                      <span className="text-4xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭕'}</span>
                       <div className="flex flex-col">
-                        <span className="font-black text-slate-800 text-3xl leading-none mb-2">{action.labelZh}</span>
-                        <span className="text-sm text-slate-400 font-bold uppercase tracking-widest">{action.labelEn}</span>
+                        <span className="font-black text-slate-800 text-xl leading-tight">{action.labelZh}</span>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em]">{action.labelEn}</span>
                       </div>
                     </div>
-                    <div className="text-5xl font-black text-red-500 shrink-0 ml-4 tabular-nums">{action.points}</div>
+                    <div className="bg-red-500 text-white px-5 py-2 rounded-xl text-2xl font-black shadow-sm min-w-[80px] text-center tabular-nums">
+                      {action.points}
+                    </div>
                   </button>
                 ))}
               </div>
             </div>
+
           </div>
         </div>
         
-        <div className="bg-white p-5 text-center text-xs text-pink-200 font-black uppercase tracking-[1em] shrink-0 border-t border-pink-50">
-          MISS IONG'S CLASS POINT MANAGER
+        {/* Footer (Minimal) */}
+        <div className="bg-white p-3 text-center text-[10px] text-pink-200 font-black uppercase tracking-[0.5em] shrink-0 border-t border-pink-50">
+          Miss Iong's Class Point Manager
         </div>
       </div>
     </div>
