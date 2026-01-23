@@ -46,87 +46,87 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
 
   return (
     <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-      <div className="bg-white w-full max-w-7xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col border-[6px] border-white max-h-[96vh]">
+      <div className="bg-white w-full max-w-7xl rounded-[2rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col border-[4px] border-white max-h-[94vh]">
         
-        {/* Header - More Compact Height */}
-        <div className="bg-[#F06292] p-4 px-10 flex justify-between items-center shrink-0 shadow-lg z-10">
-          <div className="flex items-center gap-6">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center border-4 border-white shadow-lg overflow-hidden shrink-0">
+        {/* Header - Ultra Compact */}
+        <div className="bg-[#F06292] p-2 px-8 flex justify-between items-center shrink-0 shadow-md z-10">
+          <div className="flex items-center gap-4">
+            <div className="w-11 h-11 bg-white rounded-full flex items-center justify-center border-2 border-white shadow-md overflow-hidden shrink-0">
               <img 
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${student.pokemonId}.png`} 
-                className="w-12 h-12 object-contain"
+                className="w-8 h-8 object-contain"
                 alt="Avatar"
               />
             </div>
-            <div className="flex flex-col">
-              <h2 className="text-4xl font-black text-white tracking-tighter leading-none">
-                <span className="opacity-70 mr-3 text-2xl">#{student.rollNo}</span>
+            <div className="flex flex-col leading-tight">
+              <h2 className="text-2xl font-black text-white tracking-tighter">
+                <span className="opacity-70 mr-2 text-lg">#{student.rollNo}</span>
                 {student.name}
               </h2>
-              <span className="text-pink-100 text-xs font-bold tracking-[0.2em] uppercase mt-0.5">Point Action Manager / 課堂獎懲評分</span>
+              <span className="text-pink-100 text-[8px] font-bold tracking-[0.2em] uppercase">Point Manager / 獎懲管理系統</span>
             </div>
           </div>
           <button 
             onClick={onClose} 
-            className="text-white text-6xl hover:scale-110 transition-transform leading-none"
+            className="text-white text-5xl hover:scale-110 transition-transform leading-none px-2"
           >
             &times;
           </button>
         </div>
         
         {/* Main Content Area */}
-        <div className="p-6 bg-[#FFFBFC] flex-1 overflow-hidden flex flex-col gap-5">
+        <div className="p-4 bg-[#FFFBFC] flex-1 overflow-hidden flex flex-col gap-3">
           
-          {/* Top Row: Manual Input (More Compact) */}
-          <section className="bg-white p-4 rounded-[1.8rem] border-2 border-dashed border-pink-100 flex items-center gap-6 shrink-0 shadow-sm mx-2">
-            <div className="flex flex-col pl-2">
-              <h4 className="font-black text-pink-400 uppercase text-[10px] tracking-[0.3em]">MANUAL INPUT</h4>
-              <p className="text-slate-400 font-bold text-sm">手動加減分</p>
+          {/* Top Row: Manual Input (Ultra Tight) */}
+          <section className="bg-white p-1.5 px-5 rounded-2xl border border-dashed border-pink-200 flex items-center gap-4 shrink-0 shadow-sm mx-1">
+            <div className="flex flex-col shrink-0 min-w-[60px] leading-none">
+              <h4 className="font-black text-pink-400 uppercase text-[8px] tracking-[0.1em] mb-0.5">MANUAL</h4>
+              <p className="text-slate-400 font-bold text-[10px]">手動輸入</p>
             </div>
-            <form onSubmit={handleManualSubmit} className="flex-1 flex gap-4">
+            <form onSubmit={handleManualSubmit} className="flex-1 flex gap-2">
               <input 
                 type="number"
-                placeholder="輸入分數 (例如: 10 或 -5)..."
-                className="flex-1 p-3 px-6 rounded-2xl bg-pink-50/20 border-2 border-pink-50 focus:border-[#F06292] focus:bg-white outline-none text-xl font-black transition-all placeholder:text-pink-100"
+                placeholder="輸入分數 (10, -5)..."
+                className="flex-1 p-1 px-4 rounded-lg bg-pink-50/10 border border-pink-100 focus:border-[#F06292] focus:bg-white outline-none text-base font-black transition-all placeholder:text-pink-100 h-9"
                 value={manualValue}
                 onChange={(e) => setManualValue(e.target.value)}
               />
               <button 
                 type="submit"
-                className="bg-[#F06292] text-white font-black px-10 rounded-2xl hover:bg-[#E91E63] transition-all shadow-md active:scale-95 text-lg"
+                className="bg-[#F06292] text-white font-black px-6 rounded-lg hover:bg-[#E91E63] transition-all shadow-sm active:scale-95 text-sm h-9"
               >
                 確認應用
               </button>
             </form>
           </section>
 
-          {/* Bottom Grid: Tighter gap and spacing */}
-          <div className="grid grid-cols-2 gap-6 flex-1 overflow-hidden px-2">
+          {/* Bottom Grid: Tighter gap */}
+          <div className="grid grid-cols-2 gap-4 flex-1 overflow-hidden px-1">
             
             {/* Left Column: Positive */}
-            <div className="flex flex-col overflow-hidden bg-green-50/30 rounded-[2rem] p-4 border border-green-100">
-              <div className="flex items-center gap-3 pb-3 mb-3 border-b-2 border-green-100 px-2 shrink-0">
-                <span className="text-3xl">✨</span>
-                <div className="flex flex-col">
-                  <p className="font-black text-green-600 uppercase tracking-[0.2em] text-[10px] leading-none mb-0.5">POSITIVE ACTIONS</p>
-                  <p className="text-xl font-black text-green-700">加分項目</p>
+            <div className="flex flex-col overflow-hidden bg-green-50/10 rounded-[1.5rem] p-3 border border-green-50">
+              <div className="flex items-center gap-2 pb-2 mb-2 border-b border-green-100 px-1 shrink-0">
+                <span className="text-xl">✨</span>
+                <div className="flex flex-col leading-none">
+                  <p className="font-black text-green-600 uppercase tracking-[0.1em] text-[8px] mb-0.5">POSITIVE</p>
+                  <p className="text-base font-black text-green-700">加分項目</p>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 pb-4 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto pr-1 space-y-1 pb-1 custom-scrollbar">
                 {positiveActions.map((action, idx) => (
                   <button
                     key={idx}
                     onClick={() => onAction(action)}
-                    className="w-full flex justify-between items-center p-3 px-6 rounded-2xl bg-white border border-slate-100 hover:border-green-300 hover:bg-white transition-all text-left group shadow-sm active:scale-[0.98] border-b-4 active:border-b active:translate-y-0.5"
+                    className="w-full flex justify-between items-center p-1.5 px-4 rounded-xl bg-white border border-slate-50 hover:border-green-300 transition-all text-left group shadow-sm active:scale-[0.99] border-b-2 active:border-b active:translate-y-0.5"
                   >
-                    <div className="flex items-center gap-5">
-                      <span className="text-4xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭐'}</span>
-                      <div className="flex flex-col">
-                        <span className="font-black text-slate-800 text-xl leading-tight">{action.labelZh}</span>
-                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em]">{action.labelEn}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭐'}</span>
+                      <div className="flex flex-col leading-tight">
+                        <span className="font-black text-slate-800 text-base">{action.labelZh}</span>
+                        <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">{action.labelEn}</span>
                       </div>
                     </div>
-                    <div className="bg-green-500 text-white px-5 py-2 rounded-xl text-2xl font-black shadow-sm min-w-[80px] text-center tabular-nums">
+                    <div className="bg-green-500 text-white px-3 py-1 rounded-lg text-lg font-black shadow-sm min-w-[55px] text-center tabular-nums">
                       +{action.points}
                     </div>
                   </button>
@@ -135,29 +135,29 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
             </div>
 
             {/* Right Column: Negative */}
-            <div className="flex flex-col overflow-hidden bg-red-50/30 rounded-[2rem] p-4 border border-red-100">
-              <div className="flex items-center gap-3 pb-3 mb-3 border-b-2 border-red-100 px-2 shrink-0">
-                <span className="text-3xl">⚠️</span>
-                <div className="flex flex-col">
-                  <p className="font-black text-red-600 uppercase tracking-[0.2em] text-[10px] leading-none mb-0.5">NEGATIVE ACTIONS</p>
-                  <p className="text-xl font-black text-red-700">減分項目</p>
+            <div className="flex flex-col overflow-hidden bg-red-50/10 rounded-[1.5rem] p-3 border border-red-50">
+              <div className="flex items-center gap-2 pb-2 mb-2 border-b border-red-100 px-1 shrink-0">
+                <span className="text-xl">⚠️</span>
+                <div className="flex flex-col leading-none">
+                  <p className="font-black text-red-600 uppercase tracking-[0.1em] text-[8px] mb-0.5">NEGATIVE</p>
+                  <p className="text-base font-black text-red-700">減分項目</p>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto pr-1 space-y-2.5 pb-4 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto pr-1 space-y-1 pb-1 custom-scrollbar">
                 {negativeActions.map((action, idx) => (
                   <button
                     key={idx}
                     onClick={() => onAction(action)}
-                    className="w-full flex justify-between items-center p-3 px-6 rounded-2xl bg-white border border-slate-100 hover:border-red-300 hover:bg-white transition-all text-left group shadow-sm active:scale-[0.98] border-b-4 active:border-b active:translate-y-0.5"
+                    className="w-full flex justify-between items-center p-1.5 px-4 rounded-xl bg-white border border-slate-50 hover:border-red-300 transition-all text-left group shadow-sm active:scale-[0.99] border-b-2 active:border-b active:translate-y-0.5"
                   >
-                    <div className="flex items-center gap-5">
-                      <span className="text-4xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭕'}</span>
-                      <div className="flex flex-col">
-                        <span className="font-black text-slate-800 text-xl leading-tight">{action.labelZh}</span>
-                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.1em]">{action.labelEn}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭕'}</span>
+                      <div className="flex flex-col leading-tight">
+                        <span className="font-black text-slate-800 text-base">{action.labelZh}</span>
+                        <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">{action.labelEn}</span>
                       </div>
                     </div>
-                    <div className="bg-red-500 text-white px-5 py-2 rounded-xl text-2xl font-black shadow-sm min-w-[80px] text-center tabular-nums">
+                    <div className="bg-red-500 text-white px-3 py-1 rounded-lg text-lg font-black shadow-sm min-w-[55px] text-center tabular-nums">
                       {action.points}
                     </div>
                   </button>
@@ -169,7 +169,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
         </div>
         
         {/* Footer (Minimal) */}
-        <div className="bg-white p-3 text-center text-[10px] text-pink-200 font-black uppercase tracking-[0.5em] shrink-0 border-t border-pink-50">
+        <div className="bg-white p-2 text-center text-[8px] text-pink-200 font-black uppercase tracking-[0.5em] shrink-0 border-t border-pink-50">
           Miss Iong's Class Point Manager
         </div>
       </div>
