@@ -42,8 +42,8 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-300">
-      {/* Pink Bordered Card */}
-      <div className="bg-white w-full max-w-sm rounded-[3.5rem] p-8 border-[10px] border-[#F06292] shadow-2xl relative animate-in zoom-in duration-500 flex flex-col items-center">
+      {/* Pink Bordered Card - Narrowed Vertically */}
+      <div className="bg-white w-full max-w-sm rounded-[3rem] p-5 border-[8px] border-[#F06292] shadow-2xl relative animate-in zoom-in duration-500 flex flex-col items-center">
         
         {/* Firework Particles for Success */}
         {isPos && (
@@ -67,43 +67,43 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
           </div>
         )}
 
-        {/* Top Status Text - Centered Layout */}
-        <div className="flex flex-col items-center gap-1 mb-6">
-           <span className="text-5xl mb-2">{isPos ? '✨' : '⚠️'}</span>
+        {/* Top Status Text - Tighter Layout */}
+        <div className="flex flex-col items-center gap-0.5 mb-3">
+           <span className="text-4xl">{isPos ? '✨' : '⚠️'}</span>
            <div className={`flex flex-col items-center leading-none text-center ${isPos ? 'text-[#F06292]' : 'text-[#78909C]'}`}>
-             <span className="font-black text-xl tracking-tighter uppercase mb-1">
-               {isPos ? 'CONGRATULATIONS!' : 'KEEP TRYING!'}
+             <span className="font-black text-xs tracking-[0.2em] uppercase opacity-60">
+               {isPos ? 'CONGRATS' : 'KEEP GOING'}
              </span>
-             <span className="font-black text-3xl tracking-tight">
+             <span className="font-black text-2xl tracking-tight">
                {isPos ? '恭喜你' : '繼續努力！'}
              </span>
            </div>
         </div>
 
-        {/* Avatar Section - Larger and without box */}
-        <div className="w-full flex items-center justify-center mb-8 relative">
+        {/* Avatar Section - Scaled Down */}
+        <div className="w-full flex items-center justify-center mb-4 relative">
            <img 
               src={pokemonImg} 
-              className={`w-56 h-56 object-contain drop-shadow-2xl z-10 relative ${isPos ? 'animate-bounce' : 'animate-shake'}`}
+              className={`w-40 h-40 object-contain drop-shadow-xl z-10 relative ${isPos ? 'animate-bounce' : 'animate-shake'}`}
               alt="Pokemon"
            />
            {/* Ambient Glow behind Pokemon */}
-           <div className={`absolute inset-0 opacity-30 blur-3xl scale-125 -z-0 ${isPos ? 'bg-pink-400' : 'bg-gray-400'}`}></div>
+           <div className={`absolute inset-0 opacity-20 blur-3xl scale-110 -z-0 ${isPos ? 'bg-pink-400' : 'bg-gray-400'}`}></div>
         </div>
 
-        {/* Student Name and Score Change - Centered */}
-        <div className="text-center w-full space-y-1 mb-6">
-          <h3 className="text-[#D81B60] text-3xl font-black tracking-tighter leading-tight">
+        {/* Student Name and Score Change - Compact */}
+        <div className="text-center w-full space-y-1 mb-4">
+          <h3 className="text-[#D81B60] text-2xl font-black tracking-tighter leading-tight">
              {isGroup ? student.name : `#${student.rollNo} ${student.name}`}
           </h3>
           
-          <div className="flex flex-col items-center justify-center gap-3 mt-4">
-             <div className={`px-8 py-2 rounded-2xl font-black text-3xl shadow-md border-4 border-white ${isPos ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+          <div className="flex flex-col items-center justify-center gap-2 mt-2">
+             <div className={`px-6 py-1 rounded-xl font-black text-2xl shadow-sm border-2 border-white ${isPos ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
                 {delta > 0 ? `+${delta}` : delta}
              </div>
              {reason && (
-               <div className="bg-slate-50 px-5 py-1.5 rounded-xl border border-slate-100 shadow-inner">
-                 <span className="text-slate-500 text-sm font-black uppercase tracking-wider">
+               <div className="bg-slate-50 px-3 py-0.5 rounded-lg border border-slate-100">
+                 <span className="text-slate-400 text-[10px] font-black uppercase tracking-wider">
                     {reason}
                  </span>
                </div>
@@ -111,17 +111,12 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
           </div>
         </div>
 
-        {/* Current Points Bar - Centered */}
-        <div className="w-full bg-[#FDF2F5] rounded-[2.5rem] p-4 border-2 border-white shadow-inner text-center">
-          <p className="text-[10px] font-black text-pink-300 uppercase tracking-[0.3em] mb-1">CURRENT TOTAL / 目前分數</p>
-          <div className="text-5xl font-black text-[#D81B60] tracking-tighter">
+        {/* Current Points Bar - Compacted */}
+        <div className="w-full bg-[#FDF2F5] rounded-[1.5rem] p-2 px-4 border-2 border-white shadow-inner flex justify-between items-center">
+          <p className="text-[9px] font-black text-pink-300 uppercase tracking-widest">目前總分</p>
+          <div className="text-2xl font-black text-[#D81B60] tracking-tighter">
             {student.points}
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-6 text-[10px] font-black text-pink-200 uppercase tracking-[0.4em]">
-          Feedback System
         </div>
       </div>
     </div>

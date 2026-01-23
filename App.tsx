@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { INITIAL_CLASSES } from './constants';
 import { Student, ClassData, SortType, PointAction } from './types';
 import { StudentCard } from './components/StudentCard';
@@ -29,6 +29,9 @@ const App: React.FC = () => {
   const [isShuffling, setIsShuffling] = useState(false);
   const [shuffleIndex, setShuffleIndex] = useState<number>(-1);
   const [shufflingWinner, setShufflingWinner] = useState<Student | null>(null);
+
+  // Refs for auto-scrolling
+  const studentRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Initialize data
   useEffect(() => {
@@ -64,6 +67,16 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('miss_iong_picked_history', JSON.stringify(pickedIdsMap));
   }, [pickedIdsMap]);
+
+  // Handle auto-scrolling when shuffleIndex changes
+  useEffect(() => {
+    if (isShuffling && shuffleIndex >= 0 && studentRefs.current[shuffleIndex]) {
+      studentRefs.current[shuffleIndex]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [shuffleIndex, isShuffling]);
 
   const currentClass = classes.find(c => c.id === selectedClassId);
   const students = currentClass?.students || [];
@@ -114,7 +127,6 @@ const App: React.FC = () => {
         else audioService.playPointDown();
       }
     } else {
-      // Group feedback
       setFeedback({
         student: { id: 'group', name: '所選學生團隊', points: 0, rollNo: 0, pokemonId: 25 } as any,
         type: points > 0 ? 'positive' : 'negative',
@@ -195,7 +207,6 @@ const App: React.FC = () => {
     input.click();
   };
 
-  // Shared button styles
   const btnBase = "px-4 py-1.5 rounded-full font-black text-xs transition-all shadow-sm border-2 flex items-center justify-center gap-2 active:scale-95";
   const btnWhite = `${btnBase} bg-white text-[#F06292] border-pink-100 hover:border-[#F06292] hover:bg-pink-50`;
   const btnActive = `${btnBase} bg-[#F06292] text-white border-[#F06292] shadow-pink-200`;
@@ -203,12 +214,10 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FFF5F7] flex flex-col gap-3 pb-8">
       
-      {/* Header - Unified with Control Bar colors */}
       <header className="bg-white/90 backdrop-blur-md sticky top-0 z-[100] py-3 px-8 flex justify-between items-center shadow-sm border-b border-pink-50">
         <h1 className="text-3xl font-black text-[#D81B60] tracking-tighter">Miss Iong's Class</h1>
         
         <div className="flex gap-3 items-center">
-          {/* Unified Class Selector */}
           <div className="relative">
             <select 
               className="appearance-none bg-white text-[#F06292] font-black py-2 px-8 pr-12 rounded-full cursor-pointer focus:outline-none focus:ring-4 focus:ring-pink-100 shadow-sm border-2 border-pink-100 hover:border-[#F06292] hover:bg-pink-50 transition-all text-sm active:scale-95"
@@ -220,19 +229,16 @@ const App: React.FC = () => {
             <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#F06292] font-black">▼</div>
           </div>
           
-          {/* Unified Export Button */}
           <button onClick={handleExport} className={`${btnWhite} px-6 text-sm py-2`}>
             📩 EXPORT / 導出
           </button>
           
-          {/* Unified Import Button */}
           <button onClick={handleImport} className={`${btnWhite} px-6 text-sm py-2`}>
             📩 IMPORT / 導入
           </button>
         </div>
       </header>
 
-      {/* Control Bar - Tightened py-2 */}
       <div className="mx-8 bg-white/80 backdrop-blur-sm rounded-full py-2 px-6 flex flex-wrap items-center justify-between gap-4 border border-white shadow-sm ring-4 ring-pink-50/50">
         <div className="flex gap-2 items-center">
           <button onClick={() => setSortType(SortType.ID_ASC)} className={sortType === SortType.ID_ASC ? btnActive : btnWhite}># ID / 學號</button>
@@ -291,13 +297,13 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Grid - Fixed to 6 columns on large screens */}
       <main className="px-8 flex-1">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {filteredAndSortedStudents.map((student, idx) => (
             <div 
               key={student.id} 
-              className={`transition-all duration-300 ${isShuffling && shuffleIndex !== idx ? 'opacity-30 blur-[1px] scale-95' : ''} ${isShuffling && shuffleIndex === idx ? 'scale-105 z-20' : ''}`}
+              ref={el => studentRefs.current[idx] = el}
+              className={`transition-all duration-300 ${isShuffling && shuffleIndex !== idx ? 'opacity-30 blur-[1px] scale-95' : ''} ${isShuffling && shuffleIndex === idx ? 'scale-110 z-20 ring-4 ring-yellow-400 rounded-[2.5rem]' : ''}`}
             >
               <StudentCard 
                 student={student} 
@@ -324,7 +330,6 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Modals */}
       {(actingStudent || bulkActing) && (
         <ActionModal 
           student={actingStudent || { name: `${selectedIds.size}位所選學生`, rollNo: 0, pokemonId: 25 } as any}
