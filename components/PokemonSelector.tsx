@@ -17,38 +17,45 @@ export const PokemonSelector: React.FC<PokemonSelectorProps> = ({ onSelect, onCl
   const filteredIds = pokemonIds.filter(id => id.toString().includes(search));
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-7xl max-h-[90vh] rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl animate-in zoom-in duration-300">
-        {/* Header Section */}
-        <div className="bg-pokemon-blue p-6 md:p-8 flex flex-col gap-6">
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-6">
-              <div className="bg-white/20 p-2 rounded-2xl border-2 border-white/30 backdrop-blur-sm shadow-inner shrink-0">
+    // Positioned below the sticky header (approx 73px)
+    <div className="fixed top-[73px] left-0 right-0 bottom-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="bg-white w-full max-w-7xl max-h-full rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl border-4 border-white">
+        
+        {/* Compact Header Section */}
+        <div className="bg-pokemon-blue p-4 md:p-5 flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4">
+              <div className="bg-white/20 p-1.5 rounded-xl border border-white/30 backdrop-blur-sm shadow-inner shrink-0">
                 <img 
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${currentId}.png`} 
-                  className="w-16 h-16 md:w-20 md:h-20 object-contain drop-shadow-md"
+                  className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-md"
                   alt="Current"
                 />
               </div>
               <div className="text-white">
-                <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tighter leading-none">Choose New Pokemon</h2>
-                <p className="text-blue-100 font-bold text-base md:text-xl mt-1">
+                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight leading-none">Choose New Pokemon</h2>
+                <p className="text-blue-100 font-bold text-sm md:text-base mt-0.5">
                   正在為 <span className="text-yellow-300">#{student.rollNo} {student.name}</span> 更換頭像
                 </p>
-                <p className="text-[10px] md:text-sm font-bold opacity-80 uppercase tracking-widest mt-1">
+                <p className="text-[10px] font-bold opacity-70 uppercase tracking-widest mt-0.5">
                   目前使用的頭像序號：<span className="text-white">#{currentId}</span>
                 </p>
               </div>
             </div>
-            <button onClick={onClose} className="text-white text-5xl md:text-6xl hover:scale-110 transition-transform p-2 leading-none">&times;</button>
+            <button 
+              onClick={onClose} 
+              className="text-white text-4xl md:text-5xl hover:scale-110 transition-transform p-1 leading-none font-light"
+            >
+              &times;
+            </button>
           </div>
           
-          <div className="relative max-w-2xl">
-            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-xl opacity-50">🔍</span>
+          <div className="relative max-w-xl">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg opacity-40">🔍</span>
             <input 
               type="text" 
               placeholder="Search by ID (1-500)... / 搜尋序號..."
-              className="w-full p-4 pl-14 rounded-2xl border-none focus:ring-8 focus:ring-yellow-400 text-lg md:text-xl font-bold shadow-2xl outline-none text-slate-800"
+              className="w-full p-3 pl-11 rounded-xl border-none focus:ring-4 focus:ring-yellow-400 text-base md:text-lg font-bold shadow-lg outline-none text-slate-800 transition-all"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               autoFocus
@@ -56,26 +63,25 @@ export const PokemonSelector: React.FC<PokemonSelectorProps> = ({ onSelect, onCl
           </div>
         </div>
 
-        {/* Grid Section - Fixed Distortion */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-[#F8FAFC]">
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12 gap-4 md:gap-6">
+        {/* Grid Section */}
+        <div className="flex-1 overflow-y-auto p-5 md:p-8 bg-[#F8FAFC]">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12 gap-3 md:gap-4">
             {filteredIds.map(id => (
               <button
                 key={id}
                 onClick={() => onSelect(id)}
-                className={`group p-3 md:p-4 rounded-3xl border-[3px] transition-all hover:scale-105 flex flex-col items-center relative overflow-hidden active:scale-95 ${
+                className={`group p-2 md:p-3 rounded-2xl border-[3px] transition-all hover:scale-105 flex flex-col items-center relative overflow-hidden active:scale-95 ${
                   id === currentId 
-                    ? 'border-pokemon-yellow bg-yellow-50 shadow-lg ring-4 ring-yellow-200 z-10' 
+                    ? 'border-pokemon-yellow bg-yellow-50 shadow-md ring-2 ring-yellow-100 z-10' 
                     : 'border-white bg-white hover:border-pokemon-blue shadow-sm'
                 }`}
               >
                 {id === currentId && (
-                  <div className="absolute top-0 right-0 bg-pokemon-yellow text-yellow-900 text-[8px] md:text-[9px] font-black px-2 py-0.5 rounded-bl-xl uppercase tracking-tighter z-20">
-                    CURRENT
+                  <div className="absolute top-0 right-0 bg-pokemon-yellow text-yellow-900 text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg uppercase tracking-tighter z-20">
+                    CURR
                   </div>
                 )}
                 
-                {/* Image Container with Fixed Proportions */}
                 <div className="w-full aspect-square flex items-center justify-center relative">
                   <img 
                     src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`} 
@@ -85,7 +91,7 @@ export const PokemonSelector: React.FC<PokemonSelectorProps> = ({ onSelect, onCl
                   />
                 </div>
                 
-                <span className={`text-[11px] md:text-[13px] font-black mt-2 md:mt-3 ${id === currentId ? 'text-yellow-700' : 'text-slate-400'}`}>
+                <span className={`text-[10px] md:text-[11px] font-black mt-1 ${id === currentId ? 'text-yellow-700' : 'text-slate-400'}`}>
                   #{id}
                 </span>
               </button>
@@ -93,16 +99,16 @@ export const PokemonSelector: React.FC<PokemonSelectorProps> = ({ onSelect, onCl
           </div>
           
           {filteredIds.length === 0 && (
-            <div className="py-24 md:py-32 text-center flex flex-col items-center gap-4">
-              <span className="text-5xl md:text-7xl opacity-20">🔎</span>
-              <div className="text-slate-300 text-xl md:text-2xl font-black uppercase tracking-widest">
-                No Pokemon Found / 找不到相關序號
+            <div className="py-20 text-center flex flex-col items-center gap-3">
+              <span className="text-5xl opacity-20">🔎</span>
+              <div className="text-slate-300 text-lg font-black uppercase tracking-widest">
+                No Pokemon Found
               </div>
             </div>
           )}
         </div>
         
-        <div className="bg-white p-3 md:p-4 text-center text-[10px] md:text-[11px] text-slate-300 font-black uppercase tracking-[0.5em] md:tracking-[1em] border-t border-slate-100 shrink-0">
+        <div className="bg-white p-2 text-center text-[9px] text-slate-300 font-black uppercase tracking-[0.8em] border-t border-slate-100 shrink-0">
           Miss Iong's Pokemon Lab
         </div>
       </div>
