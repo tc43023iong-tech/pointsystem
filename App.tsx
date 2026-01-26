@@ -98,18 +98,14 @@ const App: React.FC = () => {
     return list;
   }, [students, searchQuery, sortType]);
 
-  // Pre-calculate ranks for tied scores when sorting by score desc OR asc
-  // Standard Competition Ranking: 1, 2, 2, 4...
   const studentRanks = useMemo(() => {
     const ranks: Record<string, number> = {};
     if (sortType !== SortType.SCORE_DESC && sortType !== SortType.SCORE_ASC) return ranks;
 
     filteredAndSortedStudents.forEach((student, idx) => {
       if (idx > 0 && student.points === filteredAndSortedStudents[idx - 1].points) {
-        // Tied with previous, same rank
         ranks[student.id] = ranks[filteredAndSortedStudents[idx - 1].id];
       } else {
-        // Different score, rank matches position (idx + 1)
         ranks[student.id] = idx + 1;
       }
     });
@@ -227,7 +223,7 @@ const App: React.FC = () => {
     input.click();
   };
 
-  const btnBase = "px-4 py-1.5 rounded-full font-black text-xs transition-all shadow-sm border-2 flex items-center justify-center gap-2 active:scale-95";
+  const btnBase = "px-4 py-1.5 rounded-full font-black text-xs transition-all shadow-sm border-2 flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap";
   const btnWhite = `${btnBase} bg-white text-[#F06292] border-pink-100 hover:border-[#F06292] hover:bg-pink-50`;
   const btnActive = `${btnBase} bg-[#F06292] text-white border-[#F06292] shadow-pink-200`;
 
@@ -263,28 +259,42 @@ const App: React.FC = () => {
         <div className="flex gap-2 items-center">
           <button onClick={() => setSortType(SortType.ID_ASC)} className={sortType === SortType.ID_ASC ? btnActive : btnWhite}># ID / 學號</button>
           <button onClick={() => setSortType(SortType.SCORE_DESC)} className={sortType === SortType.SCORE_DESC ? btnActive : btnWhite}>HI-LO / 高到低</button>
-          <button onClick={() => setSortType(SortType.SCORE_ASC)} className={sortType === SortType.SCORE_ASC ? btnActive : btnWhite}>扣分大王</button>
+          <button onClick={() => setSortType(SortType.SCORE_ASC)} className={sortType === SortType.SCORE_ASC ? btnActive : btnWhite}>LO-HI / 低到高</button>
         </div>
         
         <div className="flex items-center gap-3">
-          <div className="flex items-center bg-pink-50/50 p-1 rounded-full border border-pink-100 mr-2">
+          {/* Expanded Multi-select Area */}
+          <div className="flex items-center gap-1.5 bg-pink-50/50 p-1 rounded-full border border-pink-100">
              <button 
-               onClick={() => { setIsMultiSelect(!isMultiSelect); setSelectedIds(new Set()); }}
+               onClick={() => { 
+                 const newMode = !isMultiSelect;
+                 setIsMultiSelect(newMode); 
+                 if (!newMode) setSelectedIds(new Set()); 
+               }}
                className={`${btnWhite} !border-none !shadow-none ${isMultiSelect ? '!bg-[#F06292] !text-white' : ''}`}
              >
                <span className={`w-3 h-3 rounded-full mr-1 ${isMultiSelect ? 'bg-white' : 'bg-slate-300'}`}></span>
                多選模式
              </button>
+             
+             <div className="w-px h-5 bg-pink-100 mx-1"></div>
+             
+             <button 
+               onClick={() => { setIsMultiSelect(true); setSelectedIds(new Set(students.map(s => s.id))); }} 
+               className={`${btnWhite} !border-none !shadow-none hover:bg-white/80`}
+             >
+               全選
+             </button>
+             
+             <button 
+               onClick={() => { setSelectedIds(new Set()); }} 
+               className={`${btnWhite} !border-none !shadow-none hover:bg-white/80`}
+             >
+               取消
+             </button>
           </div>
 
-          {isMultiSelect && (
-            <div className="flex gap-2 animate-in fade-in slide-in-from-right-4 duration-300 pr-3 border-r border-pink-100">
-               <button onClick={() => setSelectedIds(new Set(students.map(s => s.id)))} className={`${btnWhite} bg-purple-50`}>全選</button>
-               <button onClick={() => setSelectedIds(new Set())} className={btnWhite}>取消</button>
-            </div>
-          )}
-
-          <div className="flex gap-2">
+          <div className="flex gap-2 ml-2">
             <div className="flex items-center">
               <button 
                 onClick={pickRandom} 

@@ -22,22 +22,21 @@ export const PokemonSelector: React.FC<PokemonSelectorProps> = ({ onSelect, onCl
       <div className="bg-white w-full max-w-7xl max-h-full rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl border-4 border-white">
         
         {/* Compact Header Section */}
-        <div className="bg-pokemon-blue p-4 md:p-5 flex flex-col gap-4">
+        <div className="bg-pokemon-blue p-4 md:p-6 flex flex-col gap-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <div className="bg-white/20 p-1.5 rounded-xl border border-white/30 backdrop-blur-sm shadow-inner shrink-0">
+            <div className="flex items-center gap-5">
+              <div className="bg-white/20 p-2 rounded-2xl border border-white/30 backdrop-blur-sm shadow-inner shrink-0">
                 <img 
                   src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${currentId}.png`} 
-                  className="w-12 h-12 md:w-14 md:h-14 object-contain drop-shadow-md"
+                  className="w-14 h-14 md:w-16 md:h-16 object-contain drop-shadow-md"
                   alt="Current"
                 />
               </div>
               <div className="text-white">
-                <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight leading-none">Choose New Pokemon</h2>
-                <p className="text-blue-100 font-bold text-sm md:text-base mt-0.5">
+                <p className="text-lg md:text-2xl font-black mt-0.5">
                   正在為 <span className="text-yellow-300">#{student.rollNo} {student.name}</span> 更換頭像
                 </p>
-                <p className="text-[10px] font-bold opacity-70 uppercase tracking-widest mt-0.5">
+                <p className="text-xs md:text-sm font-bold opacity-80 tracking-wide mt-1">
                   目前使用的頭像序號：<span className="text-white">#{currentId}</span>
                 </p>
               </div>
@@ -77,8 +76,8 @@ export const PokemonSelector: React.FC<PokemonSelectorProps> = ({ onSelect, onCl
                 }`}
               >
                 {id === currentId && (
-                  <div className="absolute top-0 right-0 bg-pokemon-yellow text-yellow-900 text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg uppercase tracking-tighter z-20">
-                    CURR
+                  <div className="absolute top-0 right-0 bg-pokemon-yellow text-yellow-900 text-[8px] font-black px-1.5 py-0.5 rounded-bl-lg tracking-tighter z-20">
+                    Current
                   </div>
                 )}
                 
@@ -101,14 +100,14 @@ export const PokemonSelector: React.FC<PokemonSelectorProps> = ({ onSelect, onCl
           {filteredIds.length === 0 && (
             <div className="py-20 text-center flex flex-col items-center gap-3">
               <span className="text-5xl opacity-20">🔎</span>
-              <div className="text-slate-300 text-lg font-black uppercase tracking-widest">
+              <div className="text-slate-300 text-lg font-black tracking-widest">
                 No Pokemon Found
               </div>
             </div>
           )}
         </div>
         
-        <div className="bg-white p-2 text-center text-[9px] text-slate-300 font-black uppercase tracking-[0.8em] border-t border-slate-100 shrink-0">
+        <div className="bg-white p-3 text-center text-[10px] text-slate-300 font-bold tracking-widest border-t border-slate-100 shrink-0">
           Miss Iong's Pokemon Lab
         </div>
       </div>
