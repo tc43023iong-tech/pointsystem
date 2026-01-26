@@ -5,22 +5,22 @@ export const POKEMON_COUNT = 500;
 
 export const ACTIONS: PointAction[] = [
   // Positive (加分行為)
-  { labelEn: "good participation", labelZh: "積極參與", points: 1, type: 'positive' },
-  { labelEn: "well focused", labelZh: "專心上課", points: 1, type: 'positive' },
-  { labelEn: "diligent learning", labelZh: "認真學習", points: 1, type: 'positive' },
-  { labelEn: "quiet eating", labelZh: "安靜吃飯", points: 1, type: 'positive' },
-  { labelEn: "participating in exercises", labelZh: "配合做課間操", points: 1, type: 'positive' },
-  { labelEn: "respect miss iong!", labelZh: "尊重容老師！", points: 3, type: 'positive' },
+  { labelEn: "Good participation", labelZh: "積極參與", points: 1, type: 'positive' },
+  { labelEn: "Well focused", labelZh: "專心上課", points: 1, type: 'positive' },
+  { labelEn: "Diligent learning", labelZh: "認真學習", points: 1, type: 'positive' },
+  { labelEn: "Quiet eating", labelZh: "安靜吃飯", points: 1, type: 'positive' },
+  { labelEn: "Participating in exercises", labelZh: "配合做課間操", points: 1, type: 'positive' },
+  { labelEn: "Respect Miss Iong!", labelZh: "尊重容老師！", points: 3, type: 'positive' },
   { labelEn: "You made Miss Iong so happy! 😊", labelZh: "你太讓容老師高興了😊！", points: 5, type: 'positive' },
   { labelEn: "You are simply amazing 🥳👍!", labelZh: "你簡直太棒了🥳👍！", points: 10, type: 'positive' },
   
   // Negative (減分行為)
-  { labelEn: "bad attitude", labelZh: "態度欠佳", points: -1, type: 'negative' },
-  { labelEn: "noisy", labelZh: "過於吵鬧", points: -1, type: 'negative' },
-  { labelEn: "leaving seat", labelZh: "離開座位", points: -1, type: 'negative' },
-  { labelEn: "not paying attention", labelZh: "不專心", points: -1, type: 'negative' },
-  { labelEn: "chatting in class", labelZh: "課上聊天", points: -1, type: 'negative' },
-  { labelEn: "disrespectful to miss iong", labelZh: "對容老師無禮", points: -3, type: 'negative' },
+  { labelEn: "Bad attitude", labelZh: "態度欠佳", points: -1, type: 'negative' },
+  { labelEn: "Noisy", labelZh: "過於吵鬧", points: -1, type: 'negative' },
+  { labelEn: "Leaving seat", labelZh: "離開座位", points: -1, type: 'negative' },
+  { labelEn: "Not paying attention", labelZh: "不專心", points: -1, type: 'negative' },
+  { labelEn: "Chatting in class", labelZh: "課上聊天", points: -1, type: 'negative' },
+  { labelEn: "Disrespectful to Miss Iong", labelZh: "對容老師無禮", points: -3, type: 'negative' },
   { labelEn: "You disappointed Miss Iong! 😢", labelZh: "你太令容老師失望了😢！", points: -5, type: 'negative' },
   { labelEn: "You have gone too far 😡!", labelZh: "你太過分/離譜了😡！", points: -10, type: 'negative' },
 ];
@@ -33,7 +33,6 @@ export const ACADEMIC_ACTIONS: PointAction[] = [
   { labelEn: "Score 60～69", labelZh: "60～69", points: 5, type: 'positive' },
 ];
 
-// The full data provided by the user is now the INITIAL_CLASSES
 export const INITIAL_CLASSES: ClassData[] = [
   {
     "id": "3b-en",

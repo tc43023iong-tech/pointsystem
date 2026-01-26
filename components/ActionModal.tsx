@@ -62,7 +62,6 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
                 {student.rollNo > 0 && <span className="opacity-70 mr-4 text-3xl font-bold">#{student.rollNo}</span>}
                 {student.name}
               </h2>
-              <span className="text-pink-100 text-[10px] font-bold tracking-[0.3em] uppercase mt-1">Point Manager / 獎懲管理系統</span>
             </div>
           </div>
           <button 
@@ -103,7 +102,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
               <div className="flex items-center gap-3 pb-3 mb-2 border-b border-green-100 px-1 shrink-0">
                 <span className="text-3xl">✨</span>
                 <div className="flex flex-col leading-none">
-                  <p className="font-black text-green-500 uppercase tracking-[0.2em] text-[10px] mb-1">POSITIVE</p>
+                  <p className="font-black text-green-500 tracking-[0.1em] text-[10px] mb-1">Positive</p>
                   <p className="text-2xl font-black text-green-700 tracking-tight">加分項目</p>
                 </div>
               </div>
@@ -118,7 +117,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
                       <span className="text-2xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭐'}</span>
                       <div className="flex flex-col leading-tight">
                         <span className="font-black text-slate-800 text-[15px]">{action.labelZh}</span>
-                        <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">{action.labelEn}</span>
+                        <span className="text-[10px] text-slate-400 font-bold tracking-tight">{action.labelEn}</span>
                       </div>
                     </div>
                     <div className="bg-green-500 text-white px-3 py-1 rounded-lg text-lg font-black shadow-sm min-w-[55px] text-center tabular-nums">
@@ -133,7 +132,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
               <div className="flex items-center gap-3 pb-3 mb-2 border-b border-red-100 px-1 shrink-0">
                 <span className="text-3xl">⚠️</span>
                 <div className="flex flex-col leading-none">
-                  <p className="font-black text-red-500 uppercase tracking-[0.2em] text-[10px] mb-1">NEGATIVE</p>
+                  <p className="font-black text-red-500 tracking-[0.1em] text-[10px] mb-1">Negative</p>
                   <p className="text-2xl font-black text-red-700 tracking-tight">減分項目</p>
                 </div>
               </div>
@@ -148,7 +147,7 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
                       <span className="text-2xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭕'}</span>
                       <div className="flex flex-col leading-tight">
                         <span className="font-black text-slate-800 text-[15px]">{action.labelZh}</span>
-                        <span className="text-[8px] text-slate-400 font-bold uppercase tracking-tight">{action.labelEn}</span>
+                        <span className="text-[10px] text-slate-400 font-bold tracking-tight">{action.labelEn}</span>
                       </div>
                     </div>
                     <div className="bg-red-500 text-white px-3 py-1 rounded-lg text-lg font-black shadow-sm min-w-[55px] text-center tabular-nums">
