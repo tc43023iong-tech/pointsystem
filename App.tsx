@@ -98,11 +98,11 @@ const App: React.FC = () => {
     return list;
   }, [students, searchQuery, sortType]);
 
-  // Pre-calculate ranks for tied scores when sorting by score desc
+  // Pre-calculate ranks for tied scores when sorting by score desc OR asc
   // Standard Competition Ranking: 1, 2, 2, 4...
   const studentRanks = useMemo(() => {
     const ranks: Record<string, number> = {};
-    if (sortType !== SortType.SCORE_DESC) return ranks;
+    if (sortType !== SortType.SCORE_DESC && sortType !== SortType.SCORE_ASC) return ranks;
 
     filteredAndSortedStudents.forEach((student, idx) => {
       if (idx > 0 && student.points === filteredAndSortedStudents[idx - 1].points) {
@@ -263,7 +263,7 @@ const App: React.FC = () => {
         <div className="flex gap-2 items-center">
           <button onClick={() => setSortType(SortType.ID_ASC)} className={sortType === SortType.ID_ASC ? btnActive : btnWhite}># ID / 學號</button>
           <button onClick={() => setSortType(SortType.SCORE_DESC)} className={sortType === SortType.SCORE_DESC ? btnActive : btnWhite}>HI-LO / 高到低</button>
-          <button onClick={() => setSortType(SortType.SCORE_ASC)} className={sortType === SortType.SCORE_ASC ? btnActive : btnWhite}>LO-HI / 低到高</button>
+          <button onClick={() => setSortType(SortType.SCORE_ASC)} className={sortType === SortType.SCORE_ASC ? btnActive : btnWhite}>扣分大王</button>
         </div>
         
         <div className="flex items-center gap-3">
