@@ -40,9 +40,9 @@ export const PokemonSelector: React.FC<PokemonSelectorProps> = ({ onSelect, onCl
     <div className="fixed top-0 left-0 right-0 bottom-0 z-[200] flex items-center justify-center p-2 md:p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-300">
       <div className="bg-white w-full max-w-6xl h-full max-h-[95vh] rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl border-[4px] border-white">
         
-        {/* Header Area - Now much more compact */}
+        {/* Header Area - Now much more compact and better organized */}
         <div className="bg-[#2196F3] px-6 py-4 md:py-5 shrink-0 shadow-lg relative z-10">
-          <div className="flex justify-between items-center mb-3">
+          <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-4">
               <div className="bg-white p-2 rounded-2xl shadow-md shrink-0 border border-blue-100">
                 <img 
@@ -68,9 +68,9 @@ export const PokemonSelector: React.FC<PokemonSelectorProps> = ({ onSelect, onCl
             </button>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center">
-            {/* Search Input - Slimmer */}
-            <div className="relative flex-1">
+          <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center">
+            {/* Search Input - Narrower on large screens to make room for Gen buttons */}
+            <div className="relative w-full lg:w-64 xl:w-80 shrink-0">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm opacity-40">🔍</span>
               <input 
                 type="text" 
@@ -81,14 +81,14 @@ export const PokemonSelector: React.FC<PokemonSelectorProps> = ({ onSelect, onCl
               />
             </div>
 
-            {/* Gen Filter Tabs - More compact */}
+            {/* Gen Filter Tabs - Expands to fill the remaining space */}
             {!search && (
-              <div className="flex overflow-x-auto gap-1.5 pb-1 lg:pb-0 no-scrollbar">
+              <div className="flex-1 flex overflow-x-auto gap-1.5 pb-1 lg:pb-0 no-scrollbar items-center">
                 {GENS.map(gen => (
                   <button
                     key={gen.name}
                     onClick={() => setActiveGen(gen.name)}
-                    className={`px-3 py-1.5 rounded-lg font-black text-[10px] whitespace-nowrap transition-all ${
+                    className={`px-3 py-1.5 rounded-lg font-black text-[10px] whitespace-nowrap transition-all flex-shrink-0 ${
                       activeGen === gen.name 
                         ? 'bg-yellow-400 text-yellow-900 shadow-md scale-105' 
                         : 'bg-white/15 text-white hover:bg-white/25'
