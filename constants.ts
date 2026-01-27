@@ -1,7 +1,7 @@
 
 import { PointAction, ClassData } from './types';
 
-export const POKEMON_COUNT = 500;
+export const POKEMON_COUNT = 1025;
 
 export const ACTIONS: PointAction[] = [
   // Positive (加分行為)
