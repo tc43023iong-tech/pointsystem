@@ -104,54 +104,48 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
 
   return (
     <div className="fixed inset-0 z-[160] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
-      <div className="bg-white w-full max-w-6xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col border-[4px] border-white max-h-[96vh]">
+      <div className="bg-white w-full max-w-4xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 flex flex-col border-[4px] border-white max-h-[96vh]">
         
-        {/* Updated Header with Middle Manual Section */}
-        <div className="bg-[#F06292] py-4 px-6 flex justify-between items-center shrink-0 shadow-md z-10 gap-6">
+        {/* Updated Header with Enlarged Name & Manual Section */}
+        <div className="bg-[#F06292] py-5 px-8 flex justify-between items-center shrink-0 shadow-md z-10 gap-8">
           
-          {/* Left: Avatar & Name */}
-          <div className="flex items-center gap-4 min-w-fit">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center border-2 border-white shadow-sm overflow-hidden shrink-0">
+          {/* Left: Enlarged Avatar & Name */}
+          <div className="flex items-center gap-6 min-w-fit">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center border-4 border-white shadow-md overflow-hidden shrink-0">
               <img 
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${student.pokemonId}.png`} 
-                className="w-9 h-9 object-contain"
+                className="w-12 h-12 object-contain"
                 alt="Avatar"
               />
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tighter whitespace-nowrap">
-              {student.rollNo > 0 && <span className="opacity-70 mr-2 text-xl font-bold">#{student.rollNo}</span>}
+            <h2 className="text-5xl font-black text-white tracking-tighter whitespace-nowrap">
+              {student.rollNo > 0 && <span className="opacity-70 mr-4 text-3xl font-bold">#{student.rollNo}</span>}
               {student.name}
             </h2>
           </div>
 
-          {/* Middle: Integrated History & Manual Section */}
-          <div className="flex-1 flex items-center justify-center">
-            <div className="bg-white p-1.5 px-4 rounded-2xl shadow-inner border border-white/20 flex items-center gap-4 w-full max-w-2xl">
-              <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => setShowHistory(true)}
-                  className="w-10 h-10 flex items-center justify-center bg-pink-50 text-slate-500 rounded-xl hover:bg-pink-100 transition-all active:scale-95 shadow-sm border border-pink-100 shrink-0"
-                  title="查看歷史數據"
-                >
-                  📜
-                </button>
-                <div className="hidden sm:flex flex-col leading-none shrink-0 min-w-[50px]">
-                  <h4 className="font-black text-[#F06292] uppercase text-[8px] tracking-[0.1em] mb-0.5">MANUAL</h4>
-                  <p className="text-slate-400 font-bold text-[10px]">手動輸入</p>
-                </div>
-              </div>
+          {/* Middle: Integrated History & Manual Section (Compact) */}
+          <div className="flex-1 flex items-center justify-center max-w-md">
+            <div className="bg-white p-1 px-3 rounded-2xl shadow-inner border border-white/20 flex items-center gap-3 w-full">
+              <button 
+                onClick={() => setShowHistory(true)}
+                className="w-9 h-9 flex items-center justify-center bg-pink-50 text-slate-500 rounded-xl hover:bg-pink-100 transition-all active:scale-95 shadow-sm border border-pink-100 shrink-0"
+                title="查看歷史數據"
+              >
+                📜
+              </button>
               
-              <form onSubmit={handleManualSubmit} className="flex-1 flex gap-2">
+              <form onSubmit={handleManualSubmit} className="flex-1 flex gap-1.5">
                 <input 
                   type="number"
-                  placeholder="輸入分數 (10, -5)..."
-                  className="flex-1 p-1 px-4 rounded-lg bg-slate-50 border border-slate-100 focus:border-[#F06292] focus:bg-white outline-none text-base font-black transition-all placeholder:text-slate-300 h-10"
+                  placeholder="手動輸入分數..."
+                  className="flex-1 p-1 px-3 rounded-lg bg-slate-50 border border-slate-100 focus:border-[#F06292] focus:bg-white outline-none text-sm font-black transition-all placeholder:text-slate-300 h-9"
                   value={manualValue}
                   onChange={(e) => setManualValue(e.target.value)}
                 />
                 <button 
                   type="submit"
-                  className="bg-[#F06292] text-white font-black px-6 rounded-lg hover:bg-[#E91E63] transition-all shadow-sm active:scale-95 text-sm h-10 whitespace-nowrap"
+                  className="bg-[#F06292] text-white font-black px-4 rounded-lg hover:bg-[#E91E63] transition-all shadow-sm active:scale-95 text-xs h-9 whitespace-nowrap"
                 >
                   確認應用
                 </button>
@@ -162,41 +156,41 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
           {/* Right: Close Button */}
           <button 
             onClick={onClose} 
-            className="text-white text-5xl hover:scale-110 transition-transform leading-none px-2 min-w-fit"
+            className="text-white text-6xl hover:scale-110 transition-transform leading-none px-2 min-w-fit pb-2"
           >
             &times;
           </button>
         </div>
         
-        {/* Main Content Area */}
-        <div className="p-6 bg-[#FFFBFC] flex-1 overflow-hidden flex flex-col gap-6">
+        {/* Main Content Area (More Compact) */}
+        <div className="p-4 bg-[#FFFBFC] flex-1 overflow-hidden flex flex-col gap-4">
           
-          <div className="grid grid-cols-2 gap-8 flex-1 overflow-hidden px-1 w-full">
+          <div className="grid grid-cols-2 gap-4 flex-1 overflow-hidden px-1 w-full">
             
             {/* Positive Actions */}
-            <div className="flex flex-col overflow-hidden bg-green-50/10 rounded-[2rem] p-4 border border-green-50 shadow-sm">
-              <div className="flex items-center gap-3 pb-4 mb-4 border-b border-green-100 px-1 shrink-0">
-                <span className="text-3xl">✨</span>
+            <div className="flex flex-col overflow-hidden bg-green-50/10 rounded-[1.5rem] p-3 border border-green-50 shadow-sm">
+              <div className="flex items-center gap-3 pb-3 mb-3 border-b border-green-100 px-1 shrink-0">
+                <span className="text-2xl">✨</span>
                 <div className="flex flex-col leading-none">
-                  <p className="font-black text-green-500 tracking-[0.1em] text-[10px] mb-1 uppercase">Positive Rewards</p>
-                  <p className="text-2xl font-black text-green-700 tracking-tight">加分項目</p>
+                  <p className="font-black text-green-500 tracking-[0.1em] text-[8px] mb-1 uppercase">Positive Rewards</p>
+                  <p className="text-xl font-black text-green-700 tracking-tight">加分項目</p>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto pr-2 space-y-2 pb-2 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto pr-1 space-y-1.5 pb-2 custom-scrollbar">
                 {positiveActions.map((action, idx) => (
                   <button
                     key={idx}
                     onClick={() => onAction(action)}
-                    className="w-full flex justify-between items-center p-3 px-5 rounded-2xl bg-white border border-slate-100 hover:border-green-400 hover:bg-green-50 transition-all text-left group shadow-sm active:scale-[0.99] border-b-4 active:border-b-2 active:translate-y-0.5"
+                    className="w-full flex justify-between items-center p-2 px-4 rounded-xl bg-white border border-slate-100 hover:border-green-400 hover:bg-green-50 transition-all text-left group shadow-sm active:scale-[0.99] border-b-2 active:border-b active:translate-y-0.5"
                   >
-                    <div className="flex items-center gap-4">
-                      <span className="text-3xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭐'}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭐'}</span>
                       <div className="flex flex-col leading-tight">
-                        <span className="font-black text-slate-800 text-lg">{action.labelZh}</span>
-                        <span className="text-[11px] text-slate-400 font-bold tracking-tight uppercase">{action.labelEn}</span>
+                        <span className="font-black text-slate-800 text-base">{action.labelZh}</span>
+                        <span className="text-[10px] text-slate-400 font-bold tracking-tight">{action.labelEn}</span>
                       </div>
                     </div>
-                    <div className="bg-green-500 text-white px-4 py-2 rounded-xl text-xl font-black shadow-sm min-w-[65px] text-center tabular-nums">
+                    <div className="bg-green-500 text-white px-3 py-1 rounded-lg text-lg font-black shadow-sm min-w-[55px] text-center tabular-nums">
                       +{action.points}
                     </div>
                   </button>
@@ -205,29 +199,29 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
             </div>
 
             {/* Negative Actions */}
-            <div className="flex flex-col overflow-hidden bg-red-50/10 rounded-[2rem] p-4 border border-red-50 shadow-sm">
-              <div className="flex items-center gap-3 pb-4 mb-4 border-b border-red-100 px-1 shrink-0">
-                <span className="text-3xl">⚠️</span>
+            <div className="flex flex-col overflow-hidden bg-red-50/10 rounded-[1.5rem] p-3 border border-red-50 shadow-sm">
+              <div className="flex items-center gap-3 pb-3 mb-3 border-b border-red-100 px-1 shrink-0">
+                <span className="text-2xl">⚠️</span>
                 <div className="flex flex-col leading-none">
-                  <p className="font-black text-red-500 tracking-[0.1em] text-[10px] mb-1 uppercase">Negative Penalties</p>
-                  <p className="text-2xl font-black text-red-700 tracking-tight">減分項目</p>
+                  <p className="font-black text-red-500 tracking-[0.1em] text-[8px] mb-1 uppercase">Negative Penalties</p>
+                  <p className="text-xl font-black text-red-700 tracking-tight">減分項目</p>
                 </div>
               </div>
-              <div className="flex-1 overflow-y-auto pr-2 space-y-2 pb-2 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto pr-1 space-y-1.5 pb-2 custom-scrollbar">
                 {negativeActions.map((action, idx) => (
                   <button
                     key={idx}
                     onClick={() => onAction(action)}
-                    className="w-full flex justify-between items-center p-3 px-5 rounded-2xl bg-white border border-slate-100 hover:border-red-400 hover:bg-red-50 transition-all text-left group shadow-sm active:scale-[0.99] border-b-4 active:border-b-2 active:translate-y-0.5"
+                    className="w-full flex justify-between items-center p-2 px-4 rounded-xl bg-white border border-slate-100 hover:border-red-400 hover:bg-red-50 transition-all text-left group shadow-sm active:scale-[0.99] border-b-2 active:border-b active:translate-y-0.5"
                   >
-                    <div className="flex items-center gap-4">
-                      <span className="text-3xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭕'}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl shrink-0 drop-shadow-sm group-hover:scale-110 transition-transform">{EMOJI_MAP[action.labelZh] || '⭕'}</span>
                       <div className="flex flex-col leading-tight">
-                        <span className="font-black text-slate-800 text-lg">{action.labelZh}</span>
-                        <span className="text-[11px] text-slate-400 font-bold tracking-tight uppercase">{action.labelEn}</span>
+                        <span className="font-black text-slate-800 text-base">{action.labelZh}</span>
+                        <span className="text-[10px] text-slate-400 font-bold tracking-tight">{action.labelEn}</span>
                       </div>
                     </div>
-                    <div className="bg-red-500 text-white px-4 py-2 rounded-xl text-xl font-black shadow-sm min-w-[65px] text-center tabular-nums">
+                    <div className="bg-red-500 text-white px-3 py-1 rounded-lg text-lg font-black shadow-sm min-w-[55px] text-center tabular-nums">
                       {action.points}
                     </div>
                   </button>
@@ -238,8 +232,8 @@ export const ActionModal: React.FC<ActionModalProps> = ({ student, onClose, onAc
           </div>
         </div>
         
-        <div className="bg-white p-2 text-center text-[9px] text-pink-200 font-black uppercase tracking-[0.6em] shrink-0 border-t border-pink-50">
-          Miss Iong's Class Point Manager • Gotta Catch 'Em All
+        <div className="bg-white p-2 text-center text-[8px] text-pink-200 font-black uppercase tracking-[0.5em] shrink-0 border-t border-pink-50">
+          Miss Iong's Class Point Manager
         </div>
       </div>
     </div>
