@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { INITIAL_CLASSES } from './constants';
-import { Student, ClassData, SortType, PointAction } from './types';
+import { Student, ClassData, SortType, PointAction, HistoryEntry } from './types';
 import { StudentCard } from './components/StudentCard';
 import { ActionModal } from './components/ActionModal';
 import { AcademicRulesModal } from './components/AcademicRulesModal';
@@ -21,6 +21,7 @@ const App: React.FC = () => {
   const [showAcademicRules, setShowAcademicRules] = useState<boolean>(false);
   const [pokeselStudent, setPokeselStudent] = useState<Student | null>(null);
   const [feedback, setFeedback] = useState<{ student: Student, type: 'positive' | 'negative', reason?: string, delta: number } | null>(null);
+  const [undoToast, setUndoToast] = useState(false);
   
   // Multi-select State
   const [isMultiSelect, setIsMultiSelect] = useState(false);
@@ -80,6 +81,14 @@ const App: React.FC = () => {
     }
   }, [shuffleIndex, isShuffling]);
 
+  // Undo Toast Timer
+  useEffect(() => {
+    if (undoToast) {
+      const timer = setTimeout(() => setUndoToast(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [undoToast]);
+
   const currentClass = classes.find(c => c.id === selectedClassId);
   const students = currentClass?.students || [];
 
@@ -94,16 +103,23 @@ const App: React.FC = () => {
       case SortType.SCORE_DESC: list.sort((a, b) => b.points - a.points); break;
       case SortType.SCORE_ASC: list.sort((a, b) => a.points - b.points); break;
       case SortType.NAME_ASC: list.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case SortType.NEG_DESC: list.sort((a, b) => b.negPoints - a.negPoints); break;
     }
     return list;
   }, [students, searchQuery, sortType]);
 
   const studentRanks = useMemo(() => {
     const ranks: Record<string, number> = {};
-    if (sortType !== SortType.SCORE_DESC && sortType !== SortType.SCORE_ASC) return ranks;
+    const isScoreSort = sortType === SortType.SCORE_DESC || sortType === SortType.SCORE_ASC;
+    const isNegSort = sortType === SortType.NEG_DESC;
+
+    if (!isScoreSort && !isNegSort) return ranks;
 
     filteredAndSortedStudents.forEach((student, idx) => {
-      if (idx > 0 && student.points === filteredAndSortedStudents[idx - 1].points) {
+      const compareVal = isNegSort ? student.negPoints : student.points;
+      const prevCompareVal = idx > 0 ? (isNegSort ? filteredAndSortedStudents[idx - 1].negPoints : filteredAndSortedStudents[idx - 1].points) : null;
+
+      if (idx > 0 && compareVal === prevCompareVal) {
         ranks[student.id] = ranks[filteredAndSortedStudents[idx - 1].id];
       } else {
         ranks[student.id] = idx + 1;
@@ -112,7 +128,10 @@ const App: React.FC = () => {
     return ranks;
   }, [filteredAndSortedStudents, sortType]);
 
-  const updateStudentPoints = (studentIds: string[], points: number, labelZh?: string) => {
+  const updateStudentPoints = (studentIds: string[], points: number, labelZh?: string, isUndo: boolean = false) => {
+    const timestamp = Date.now();
+    const reason = isUndo ? `撤銷: ${labelZh || '未知原因'}` : (labelZh || '手動操作');
+
     setClasses(prev => prev.map(c => {
       if (c.id !== selectedClassId) return c;
       return {
@@ -120,38 +139,89 @@ const App: React.FC = () => {
         students: c.students.map(s => {
           if (!studentIds.includes(s.id)) return s;
           const isPos = points > 0;
+          const newHistory: HistoryEntry = { timestamp, delta: points, reason };
           return {
             ...s,
             points: s.points + points,
             posPoints: isPos ? s.posPoints + points : s.posPoints,
-            negPoints: !isPos ? s.negPoints + Math.abs(points) : s.negPoints
+            negPoints: !isPos ? s.negPoints + Math.abs(points) : s.negPoints,
+            history: [...(s.history || []), newHistory]
           };
         })
       };
     }));
 
-    if (studentIds.length === 1) {
-      const s = students.find(x => x.id === studentIds[0]);
-      if (s) {
-        setFeedback({ 
-          student: { ...s, points: s.points + points }, 
-          type: points > 0 ? 'positive' : 'negative', 
-          reason: labelZh, 
-          delta: points 
+    if (!isUndo) {
+      if (studentIds.length === 1) {
+        const s = students.find(x => x.id === studentIds[0]);
+        if (s) {
+          setFeedback({ 
+            student: { ...s, points: s.points + points }, 
+            type: points > 0 ? 'positive' : 'negative', 
+            reason: labelZh, 
+            delta: points 
+          });
+          if (points > 0) audioService.playPointUp();
+          else audioService.playPointDown();
+        }
+      } else {
+        setFeedback({
+          student: { id: 'group', name: `${studentIds.length}位學生`, points: 0, rollNo: 0, pokemonId: 25 } as any,
+          type: points > 0 ? 'positive' : 'negative',
+          reason: labelZh || '集體獎勵',
+          delta: points
         });
         if (points > 0) audioService.playPointUp();
         else audioService.playPointDown();
       }
-    } else {
-      setFeedback({
-        student: { id: 'group', name: `${studentIds.length}位學生`, points: 0, rollNo: 0, pokemonId: 25 } as any,
-        type: points > 0 ? 'positive' : 'negative',
-        reason: labelZh || '集體獎勵',
-        delta: points
-      });
-      if (points > 0) audioService.playPointUp();
-      else audioService.playPointDown();
     }
+  };
+
+  const handleUndo = (studentId: string, delta: number, originalReason?: string) => {
+    if (studentId === 'group') {
+      setFeedback(null);
+      return;
+    }
+    updateStudentPoints([studentId], -delta, originalReason, true);
+    setFeedback(null);
+    setUndoToast(true);
+  };
+
+  const handleUndoHistory = (studentId: string, entry: HistoryEntry) => {
+    setClasses(prev => prev.map(c => {
+      if (c.id !== selectedClassId) return c;
+      return {
+        ...c,
+        students: c.students.map(s => {
+          if (s.id !== studentId) return s;
+          const isPos = entry.delta > 0;
+          return {
+            ...s,
+            points: s.points - entry.delta,
+            posPoints: isPos ? s.posPoints - entry.delta : s.posPoints,
+            negPoints: !isPos ? s.negPoints - Math.abs(entry.delta) : s.negPoints,
+            history: (s.history || []).filter(h => h.timestamp !== entry.timestamp)
+          };
+        })
+      };
+    }));
+    
+    // Update local acting student state so the modal updates immediately
+    if (actingStudent && actingStudent.id === studentId) {
+      setActingStudent(prev => {
+        if (!prev) return null;
+        const isPos = entry.delta > 0;
+        return {
+          ...prev,
+          points: prev.points - entry.delta,
+          posPoints: isPos ? prev.posPoints - entry.delta : prev.posPoints,
+          negPoints: !isPos ? prev.negPoints - Math.abs(entry.delta) : prev.negPoints,
+          history: (prev.history || []).filter(h => h.timestamp !== entry.timestamp)
+        };
+      });
+    }
+
+    setUndoToast(true);
   };
 
   const pickRandom = () => {
@@ -200,7 +270,7 @@ const App: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `miss_iong_points_${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `miss_iong_points_history_${new Date().toISOString().split('T')[0]}.json`;
     link.click();
   };
 
@@ -226,6 +296,8 @@ const App: React.FC = () => {
   const btnBase = "px-4 py-1.5 rounded-full font-black text-xs transition-all shadow-sm border-2 flex items-center justify-center gap-2 active:scale-95 whitespace-nowrap";
   const btnWhite = `${btnBase} bg-white text-[#F06292] border-pink-100 hover:border-[#F06292] hover:bg-pink-50`;
   const btnActive = `${btnBase} bg-[#F06292] text-white border-[#F06292] shadow-pink-200`;
+  const btnRedActive = `${btnBase} bg-slate-800 text-white border-slate-800 shadow-slate-200`;
+  const btnRedWhite = `${btnBase} bg-white text-slate-800 border-slate-100 hover:border-slate-800 hover:bg-slate-50`;
 
   return (
     <div className="min-h-screen bg-[#FFF5F7] flex flex-col gap-3 pb-8">
@@ -246,7 +318,7 @@ const App: React.FC = () => {
           </div>
           
           <button onClick={handleExport} className={`${btnWhite} px-6 text-sm py-2`}>
-            📩 EXPORT / 導出
+            📩 EXPORT / 導出 (含歷史)
           </button>
           
           <button onClick={handleImport} className={`${btnWhite} px-6 text-sm py-2`}>
@@ -260,10 +332,10 @@ const App: React.FC = () => {
           <button onClick={() => setSortType(SortType.ID_ASC)} className={sortType === SortType.ID_ASC ? btnActive : btnWhite}># ID / 學號</button>
           <button onClick={() => setSortType(SortType.SCORE_DESC)} className={sortType === SortType.SCORE_DESC ? btnActive : btnWhite}>HI-LO / 高到低</button>
           <button onClick={() => setSortType(SortType.SCORE_ASC)} className={sortType === SortType.SCORE_ASC ? btnActive : btnWhite}>LO-HI / 低到高</button>
+          <button onClick={() => setSortType(SortType.NEG_DESC)} className={sortType === SortType.NEG_DESC ? btnRedActive : btnRedWhite}>扣分大王 😈</button>
         </div>
         
         <div className="flex items-center gap-3">
-          {/* Expanded Multi-select Area */}
           <div className="flex items-center gap-1.5 bg-pink-50/50 p-1 rounded-full border border-pink-100">
              <button 
                onClick={() => { 
@@ -343,6 +415,7 @@ const App: React.FC = () => {
                 rank={studentRanks[student.id]}
                 isSelected={selectedIds.has(student.id)}
                 isMultiSelectMode={isMultiSelect}
+                isNegKingMode={sortType === SortType.NEG_DESC}
                 onClick={() => {
                   if (isMultiSelect) {
                     const newIds = new Set(selectedIds);
@@ -363,9 +436,19 @@ const App: React.FC = () => {
         </div>
       </main>
 
+      {/* Undo Successful Toast */}
+      {undoToast && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center pointer-events-none animate-in fade-in zoom-in duration-200">
+          <div className="bg-black/70 backdrop-blur-md text-white px-12 py-6 rounded-3xl font-black text-4xl shadow-2xl border-4 border-white flex flex-col items-center gap-2">
+            <span className="text-5xl">↩</span>
+            撤銷成功！
+          </div>
+        </div>
+      )}
+
       {(actingStudent || bulkActing) && (
         <ActionModal 
-          student={actingStudent || { name: `${selectedIds.size}位學生`, rollNo: 0, pokemonId: 25 } as any}
+          student={actingStudent || { id: 'bulk', name: `${selectedIds.size}位學生`, rollNo: 0, pokemonId: 25, history: [] } as any}
           onClose={() => { setActingStudent(null); setBulkActing(false); }}
           onAction={(action) => {
             const ids = actingStudent ? [actingStudent.id] : (Array.from(selectedIds) as string[]);
@@ -380,6 +463,9 @@ const App: React.FC = () => {
             setActingStudent(null);
             setBulkActing(false);
             if (bulkActing) { setIsMultiSelect(false); setSelectedIds(new Set()); }
+          }}
+          onUndoHistory={(entry) => {
+             if (actingStudent) handleUndoHistory(actingStudent.id, entry);
           }}
         />
       )}
@@ -410,6 +496,7 @@ const App: React.FC = () => {
           reason={feedback.reason}
           delta={feedback.delta}
           onComplete={() => setFeedback(null)} 
+          onUndo={() => handleUndo(feedback.student.id, feedback.delta, feedback.reason)}
         />
       )}
     </div>

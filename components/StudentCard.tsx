@@ -7,6 +7,7 @@ interface StudentCardProps {
   rank?: number;
   isSelected?: boolean;
   isMultiSelectMode?: boolean;
+  isNegKingMode?: boolean;
   onClick: () => void;
   onPokemonClick: (e: React.MouseEvent) => void;
 }
@@ -16,6 +17,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
   rank, 
   isSelected, 
   isMultiSelectMode, 
+  isNegKingMode,
   onClick, 
   onPokemonClick 
 }) => {
@@ -34,6 +36,13 @@ export const StudentCard: React.FC<StudentCardProps> = ({
       }`}
       onClick={onClick}
     >
+      {/* Deduction King Badge */}
+      {isNegKingMode && rank === 1 && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-4 py-1 rounded-b-2xl font-black text-[10px] shadow-md z-40 flex items-center gap-1 border-x-2 border-b-2 border-white animate-bounce">
+          <span>👑</span> 扣分大王
+        </div>
+      )}
+
       {/* Selection Overlay & Tick Mark */}
       {isMultiSelectMode && isSelected && (
         <>
@@ -55,8 +64,8 @@ export const StudentCard: React.FC<StudentCardProps> = ({
               #{student.rollNo}
             </span>
             {rank !== undefined && (
-              <span className="bg-[#FFD54F] text-[#855C00] text-[9px] px-2 py-0.5 rounded-full font-black shadow-sm">
-                RANK {rank}
+              <span className={`${isNegKingMode ? 'bg-slate-200 text-slate-800' : 'bg-[#FFD54F] text-[#855C00]'} text-[9px] px-2 py-0.5 rounded-full font-black shadow-sm`}>
+                {isNegKingMode ? `NEG RANK ${rank}` : `RANK ${rank}`}
               </span>
             )}
           </div>
@@ -66,10 +75,10 @@ export const StudentCard: React.FC<StudentCardProps> = ({
         </div>
 
         {/* Score Badge (Right Side) */}
-        <div className="flex flex-col items-center justify-center min-w-[58px] min-h-[58px] bg-[#FFF9E1] border-2 border-[#FFE082] rounded-2xl shadow-sm animate-in zoom-in duration-300">
-           <span className="text-[#B48A00] text-xs leading-none mt-1">★</span>
-           <span className="text-[#855C00] text-2xl font-black leading-tight -mt-0.5 px-2">
-             {totalVal}
+        <div className={`flex flex-col items-center justify-center min-w-[58px] min-h-[58px] ${isNegKingMode ? 'bg-slate-100 border-slate-200' : 'bg-[#FFF9E1] border-[#FFE082]'} border-2 rounded-2xl shadow-sm animate-in zoom-in duration-300`}>
+           <span className={`${isNegKingMode ? 'text-slate-400' : 'text-[#B48A00]'} text-xs leading-none mt-1`}>{isNegKingMode ? '⚡' : '★'}</span>
+           <span className={`${isNegKingMode ? 'text-slate-800' : 'text-[#855C00]'} text-2xl font-black leading-tight -mt-0.5 px-2`}>
+             {isNegKingMode ? `-${negVal}` : totalVal}
            </span>
         </div>
       </div>
@@ -99,9 +108,9 @@ export const StudentCard: React.FC<StudentCardProps> = ({
           <span className="text-[10px] font-bold text-green-500 uppercase tracking-tighter mb-0.5">POS / 加分</span>
           <span className="text-lg font-black text-green-600">+{posVal}</span>
         </div>
-        <div className="bg-red-50/70 border border-red-100 rounded-2xl py-2 px-3 flex flex-col items-center justify-center shadow-sm">
-          <span className="text-[10px] font-bold text-red-500 uppercase tracking-tighter mb-0.5">NEG / 減分</span>
-          <span className="text-lg font-black text-red-600">-{negVal}</span>
+        <div className={`border rounded-2xl py-2 px-3 flex flex-col items-center justify-center shadow-sm ${isNegKingMode ? 'bg-slate-800 border-slate-900' : 'bg-red-50/70 border-red-100'}`}>
+          <span className={`text-[10px] font-bold uppercase tracking-tighter mb-0.5 ${isNegKingMode ? 'text-slate-400' : 'text-red-500'}`}>NEG / 減分</span>
+          <span className={`text-lg font-black ${isNegKingMode ? 'text-white' : 'text-red-600'}`}>-{negVal}</span>
         </div>
       </div>
     </div>

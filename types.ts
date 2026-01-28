@@ -1,4 +1,10 @@
 
+export interface HistoryEntry {
+  timestamp: number;
+  delta: number;
+  reason: string;
+}
+
 export interface Student {
   id: string;
   rollNo: number;
@@ -7,6 +13,7 @@ export interface Student {
   posPoints: number; // Sum of positive increments
   negPoints: number; // Sum of negative increments (as magnitude)
   pokemonId: number;
+  history?: HistoryEntry[];
 }
 
 export interface ClassData {
@@ -19,7 +26,8 @@ export enum SortType {
   ID_ASC = 'ID_ASC',
   SCORE_DESC = 'SCORE_DESC',
   SCORE_ASC = 'SCORE_ASC',
-  NAME_ASC = 'NAME_ASC'
+  NAME_ASC = 'NAME_ASC',
+  NEG_DESC = 'NEG_DESC'
 }
 
 export interface PointAction {

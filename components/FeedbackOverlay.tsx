@@ -8,9 +8,10 @@ interface FeedbackOverlayProps {
   reason?: string;
   delta: number;
   onComplete: () => void;
+  onUndo: () => void;
 }
 
-export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type, reason, delta, onComplete }) => {
+export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type, reason, delta, onComplete, onUndo }) => {
   const isPos = type === 'positive';
   const isGroup = student.id === 'group';
   
@@ -34,7 +35,7 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
   }, [isPos]);
 
   useEffect(() => {
-    const timer = setTimeout(onComplete, 2600);
+    const timer = setTimeout(onComplete, 1600); // Updated to 1.6 seconds as requested
     return () => clearTimeout(timer);
   }, [onComplete]);
 
@@ -71,9 +72,6 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
         <div className="flex flex-col items-center gap-1 mb-5">
            <span className="text-5xl mb-1">{isPos ? '✨' : '⚠️'}</span>
            <div className={`flex flex-col items-center leading-none text-center ${isPos ? 'text-[#F06292]' : 'text-[#78909C]'}`}>
-             <span className="font-black text-sm tracking-[0.3em] uppercase opacity-50 mb-1">
-               {isPos ? 'FANTASTIC WORK' : 'NEVER GIVE UP'}
-             </span>
              <span className="font-black text-4xl md:text-5xl tracking-tighter">
                {isPos ? '恭喜你' : '繼續努力！'}
              </span>
@@ -121,6 +119,16 @@ export const FeedbackOverlay: React.FC<FeedbackOverlayProps> = ({ student, type,
             {student.points}
           </div>
         </div>
+
+        {/* Undo Button - Small and placed below the total bar */}
+        {!isGroup && (
+          <button 
+            onClick={(e) => { e.stopPropagation(); onUndo(); }}
+            className="mt-4 px-4 py-1 rounded-full text-[10px] font-black bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-all uppercase tracking-widest flex items-center gap-2 border border-slate-200"
+          >
+            <span>↩</span> 撤銷操作 (Undo)
+          </button>
+        )}
       </div>
     </div>
   );
